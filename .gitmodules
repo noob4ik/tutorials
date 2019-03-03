@@ -1,0 +1,3 @@
+[submodule "llamadb/example-sqldb"]
+	path = llamadb/example-sqldb
+	url = https://github.com/fluencelabs/example-sqldb
