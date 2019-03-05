@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-use boolinator::Boolinator;
-use std::convert::From;
-use std::{fmt, result::Result};
 use crate::settings::SEED;
+use boolinator::Boolinator;
 use rand::{Rng, SeedableRng};
 use rand_isaac::IsaacRng;
+use std::convert::From;
+use std::{fmt, result::Result};
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum Tile {
@@ -204,12 +204,12 @@ impl Game {
                 if tile.is_some() {
                     continue;
                 }
-                empty_tiles.push((x,y));
+                empty_tiles.push((x, y));
             }
         }
 
         if empty_tiles.is_empty() {
-            return None
+            return None;
         }
 
         let app_move = self.rng.gen_range(0, empty_tiles.len());

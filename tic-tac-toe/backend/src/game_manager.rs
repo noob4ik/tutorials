@@ -19,12 +19,12 @@ use crate::game::{Game, GameMove, Tile};
 use crate::player::Player;
 use crate::request_response::Response;
 
-use crate::settings::{PLAYERS_MAX_COUNT, USER_NAME_MAX_LEN};
+use crate::settings::{GAMES_MAX_COUNT, PLAYERS_MAX_COUNT, USER_NAME_MAX_LEN};
 use arraydeque::{ArrayDeque, Wrapping};
-use serde_json::Value;
-use std::{cell::RefCell, collections::HashMap, ops::AddAssign, rc::Rc, rc::Weak};
 use rand::{Rng, SeedableRng};
 use rand_isaac::IsaacRng;
+use serde_json::Value;
+use std::{cell::RefCell, collections::HashMap, ops::AddAssign, rc::Rc, rc::Weak};
 
 pub struct GameStatistics {
     // overall players count that has been registered
@@ -37,6 +37,7 @@ pub struct GameStatistics {
 
 pub struct GameManager {
     players: ArrayDeque<[Rc<RefCell<Player>>; PLAYERS_MAX_COUNT], Wrapping>,
+    games: ArrayDeque<[Rc<RefCell<Game>>; GAMES_MAX_COUNT], Wrapping>,
     // TODO: String key should be replaced with Cow<'a, str>. After that signatures of all public
     // functions also should be changed similar to https://jwilm.io/blog/from-str-to-cow/.
     players_by_name: HashMap<String, Weak<RefCell<Player>>>,
@@ -46,6 +47,7 @@ pub struct GameManager {
 impl GameManager {
     pub fn new() -> Self {
         GameManager {
+            games: ArrayDeque::new(),
             players: ArrayDeque::new(),
             players_by_name: HashMap::new(),
             game_statistics: RefCell::new(GameStatistics {
@@ -96,7 +98,7 @@ impl GameManager {
                 player_name.len(),
                 USER_NAME_MAX_LEN
             ))
-                .map_err(Into::into);
+            .map_err(Into::into);
         }
 
         if let None = self.players_by_name.get(&player_name) {
@@ -114,11 +116,11 @@ impl GameManager {
 
         let player = self.get_player(&player_name).unwrap();
         if let Some(game) = player.borrow().game.upgrade() {
-            return self.serialize_game_state(game);
+            return self.serialize_game_state(&game);
         }
 
-        let game_state = Rc::new(RefCell::new(Game::new(self.generate_tile())));
-        player.borrow_mut().game = Rc::downgrade(&game_state);
+        let game = Rc::new(RefCell::new(Game::new(self.generate_tile())));
+        player.borrow_mut().game = Rc::downgrade(&game);
 
         self.game_statistics
             .borrow_mut()
@@ -130,10 +132,13 @@ impl GameManager {
             .games_created
             .add_assign(1);
 
-        self.serialize_game_state(game_state)
+        let result_response = self.serialize_game_state(&game);
+        self.games.push_back(game);
+
+        result_response
     }
 
-    pub fn serialize_game_state(&self, game: Rc<RefCell<Game>>) -> AppResult<Value> {
+    pub fn serialize_game_state(&self, game: &Rc<RefCell<Game>>) -> AppResult<Value> {
         let (chosen_tile, board) = game.borrow().get_state();
         let response = Response::GetGameState {
             board,
@@ -141,15 +146,15 @@ impl GameManager {
             winner: match game.borrow().get_winner() {
                 Some(winner) => winner.to_string(),
                 None => "None".to_owned(),
-            }
+            },
         };
-        return serde_json::to_value(response).map_err(Into::into)
+        return serde_json::to_value(response).map_err(Into::into);
     }
 
     /// Returns current game state for provided user as a GetGameStateResponse serde_json Value.
     pub fn get_game_state(&self, player_name: String) -> AppResult<Value> {
         let game = self.get_player_game(&player_name)?;
-        self.serialize_game_state(game)
+        self.serialize_game_state(&game)
     }
 
     /// Returns statistics of application usage.
@@ -166,8 +171,7 @@ impl GameManager {
         let mut rng = IsaacRng::seed_from_u64(self.game_statistics.borrow().games_created);
         if rng.gen::<bool>() {
             Tile::X
-        }
-        else {
+        } else {
             Tile::O
         }
     }
@@ -180,7 +184,7 @@ impl GameManager {
             }),
             None => Err(format!("Player with name {} wasn't found", player_name)),
         }
-            .map_err(Into::into)
+        .map_err(Into::into)
     }
 
     fn get_player_game(&self, player_name: &str) -> AppResult<Rc<RefCell<Game>>> {

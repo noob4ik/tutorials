@@ -32,6 +32,7 @@ use serde_json::Value;
 use std::cell::RefCell;
 
 mod settings {
+    pub const GAMES_MAX_COUNT: usize = 1024;
     pub const PLAYERS_MAX_COUNT: usize = 1024;
     pub const SEED: u64 = 12345678;
     // to prevent DoS attack with large strings
