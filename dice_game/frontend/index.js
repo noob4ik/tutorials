@@ -39,14 +39,12 @@ window.onload = function () {
 	// application to interact with that stored in Fluence contract
 	let appId = "10";
 
-	// create a session between client and backend application, and then join the game
+	// create a session between client and backend application
 	fluence.connect(contractAddress, appId, ethUrl).then((s) => {
 		console.log("Session created");
 		window.session = s;
-	}).then(() => join());
-
-	// send request to join the game
-	function join() {
+	}).then(() => {
+		// join the game
 		let result = session.invoke(`{ "action": "Join" }`);
 		getResultString(result).then(function (str) {
 			let response = JSON.parse(str);
@@ -59,7 +57,7 @@ window.onload = function () {
 				showError("Unable to register: " + str);
 			}
 		});
-	}
+	});
 
 	// hide registration, show game controls and balance
 	function startGame(id) {
@@ -68,16 +66,41 @@ window.onload = function () {
 		betInput.focus();
 	}
 
+	// we could get balance for any player
+	function getBalance(id) {
+		let result = session.invoke(`{ "player_id": ${id}, "action": "GetBalance"}`);
+		return getResultString(result).then(function (str) {
+			let response = JSON.parse(str);
+			if (response.player_balance) {
+				updateBalance(response.player_balance)
+			} else {
+				showError("Unable to get balance: " + str);
+			}
+		});
+	}
+
 	// call roll() on button click
 	rollButton.addEventListener("click", roll);
 
 	// roll the dice by sending a request to backend, show the outcome and balance
 	function roll() {
-		if (checkInput()) {
+		if (!(betInput.checkValidity() && guessInput.checkValidity())) {
+			betInput.reportValidity();
+			guessInput.reportValidity();
+		} else {
 			resultDiv.innerHTML = "";
-			let request = betRequest();
-			let result = session.invoke(request);
-			getResultString(result).then(str => {
+			let bet = parseInt(betInput.value.trim());
+			let guess = parseInt(guessInput.value.trim());
+
+			let request = {
+				player_id: globalInfo.player_id,
+				action: "Bet",
+				placement: guess,
+				bet_amount: parseInt(bet)
+			};
+
+			let result = session.invoke(JSON.stringify(request));
+			getResultString(result).then(function (str) {
 				let response = JSON.parse(str);
 				if (response.outcome) {
 					showResult(parseInt(response.outcome), guess);
@@ -89,42 +112,15 @@ window.onload = function () {
 		}
 	}
 
-	// build a bet JSON request from inputs
-	function betRequest() {
-		let bet = parseInt(betInput.value.trim());
-		let guess = parseInt(guessInput.value.trim());
-
-		let request = {
-			player_id: globalInfo.player_id,
-			action: "Bet",
-			placement: guess,
-			bet_amount: parseInt(bet)
-		};
-		
-		return JSON.stringify(request);
-	}
-
-	// check inputs are valid, and report if they're not
-	function checkInput() {
-		if (!(betInput.checkValidity() && guessInput.checkValidity())) {
-			betInput.reportValidity();
-			guessInput.reportValidity();
-			return false;
-		}
-
-		return true;
-	}
-
-	// display results in UI
 	function showResult(fact, guess) {
 		let resultStr = `<h2>Outcome is ${fact}.   `;
 		if (fact !== guess) {
 			globalInfo.losses_number = globalInfo.losses_number + 1;
 			let time = globalInfo.losses_number === 1 ? "time" : "times in a row";
-			resultDiv.innerHTML =  `${resultStr}<b style='color:red'>You've lost ${globalInfo.losses_number} ${time}!</b></h2>`
+			resultDiv.innerHTML =  `${resultStr}<b style='color:red'>You lose ${globalInfo.losses_number} ${time}!</b></h2>`
 		} else {
 			globalInfo.losses_number = 0;
-			resultDiv.innerHTML = resultStr + "<b style='color:green'>You won!</b></h2>"
+			resultDiv.innerHTML = resultStr + "<b style='color:green'>You win!</b></h2>"
 		}
 	}
 
@@ -135,7 +131,7 @@ window.onload = function () {
 		historyTable.innerHTML = history.join("");
 	}
 
-	// update balance in UI
+	// update balance html
 	function updateBalance(balance) {
 		globalInfo.balance = balance;
 		balanceDiv.innerHTML = globalInfo.balance;
@@ -145,18 +141,5 @@ window.onload = function () {
 	function showError(error) {
 		console.error(error)
 		// TODO: show error visually
-	}
-
-	// hackity-hack! we could get balance for any player
-	function getBalance(id) {
-		let result = session.invoke(`{ "player_id": ${id}, "action": "GetBalance"}`);
-		return getResultString(result).then(function (str) {
-			let response = JSON.parse(str);
-			if (response.player_balance) {
-				updateBalance(response.player_balance)
-			} else {
-				showError("Unable to get balance: " + str);
-			}
-		});
 	}
 };

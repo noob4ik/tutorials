@@ -16,11 +16,8 @@
 
 use crate::error_type::AppResult;
 use crate::game::{Game, GameMove, Tile};
-use crate::json_parser::{
-    CreateGameResponse, CreatePlayerResponse, GetGameStateResponse, GetStatisticsResponse,
-    MoveResponse,
-};
 use crate::player::Player;
+use crate::request_response::Response;
 
 use crate::settings::{GAMES_MAX_COUNT, PLAYERS_MAX_COUNT, USER_NAME_MAX_LEN};
 use arraydeque::{ArrayDeque, Wrapping};
@@ -74,15 +71,13 @@ impl GameManager {
                     Some(winner) => winner.to_string(),
                     None => "None".to_owned(),
                 };
-                MoveResponse {
-                    player_name,
+                Response::PlayerMove {
                     winner,
                     coords: (app_move.x, app_move.y),
                 }
             }
             // none means a win of the player or a draw
-            None => MoveResponse {
-                player_name,
+            None => Response::PlayerMove {
                 winner: game.get_winner().unwrap().to_string(),
                 coords: (std::usize::MAX, std::usize::MAX),
             },
@@ -101,7 +96,7 @@ impl GameManager {
                 player_name.len(),
                 USER_NAME_MAX_LEN
             ))
-            .map_err(Into::into);
+                .map_err(Into::into);
         }
 
         let new_player = Rc::new(RefCell::new(Player::new(player_name.clone())));
@@ -109,7 +104,7 @@ impl GameManager {
             return Err(
                 "User with this name is already registered, please choose another one".to_owned(),
             )
-            .map_err(Into::into);
+                .map_err(Into::into);
         }
 
         self.players_by_name
@@ -121,8 +116,7 @@ impl GameManager {
             self.players_by_name.remove(&prev.borrow().name);
         }
 
-        let response = CreatePlayerResponse {
-            player_name,
+        let response = Response::CreatePlayer {
             result: "A new player has been successfully created".to_owned(),
         };
 
@@ -145,8 +139,7 @@ impl GameManager {
 
         let response = match player_tile {
             Tile::X => {
-                let response = CreateGameResponse {
-                    player_name,
+                let response = Response::CreateGame {
                     result: "A new game has been successfully created".to_owned(),
                 };
                 serde_json::to_value(response)
@@ -154,8 +147,7 @@ impl GameManager {
             // if the user chose 'O' tile the app should move first
             Tile::O => {
                 let app_move = game_state.borrow_mut().app_move().unwrap();
-                let response = MoveResponse {
-                    player_name,
+                let response = Response::PlayerMove {
                     winner: "None".to_owned(),
                     coords: (app_move.x, app_move.y),
                 };
@@ -177,8 +169,7 @@ impl GameManager {
         let game = self.get_player_game(&player_name)?;
         let (chosen_tile, board) = game.borrow().get_state();
 
-        let response = GetGameStateResponse {
-            player_name,
+        let response = Response::GetGameState {
             player_tile: chosen_tile.to_char(),
             board,
         };
@@ -187,7 +178,7 @@ impl GameManager {
 
     /// Returns statistics of application usage.
     pub fn get_statistics(&self) -> AppResult<Value> {
-        let response = GetStatisticsResponse {
+        let response = Response::GetStatistics {
             players_created: self.game_statistics.borrow().players_created,
             games_created: self.game_statistics.borrow().games_created,
             moves_count: self.game_statistics.borrow().moves_count,
@@ -203,7 +194,7 @@ impl GameManager {
             }),
             None => Err(format!("Player with name {} wasn't found", player_name)),
         }
-        .map_err(Into::into)
+            .map_err(Into::into)
     }
 
     fn get_player_game(&self, player_name: &str) -> AppResult<Rc<RefCell<Game>>> {

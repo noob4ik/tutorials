@@ -92,7 +92,7 @@ impl GameManager {
         let bet_amount = u64::from(bet_amount);
         check_bet(player_balance, placement, bet_amount)?;
 
-        let outcome = self.rng.gen::<u8>() % GameManager::DICE_LINE_COUNT + 1;
+        let outcome = self.rng.gen_range(1, GameManager::DICE_LINE_COUNT + 1);
         let new_player_balance = update_balance(player_balance, placement, outcome);
 
         let response = Response::Bet {

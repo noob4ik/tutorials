@@ -17,6 +17,9 @@
 use boolinator::Boolinator;
 use std::convert::From;
 use std::{fmt, result::Result};
+use crate::settings::SEED;
+use rand::{Rng, SeedableRng};
+use rand_isaac::IsaacRng;
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum Tile {
@@ -93,10 +96,10 @@ impl GameMove {
     }
 }
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct Game {
     board: [[Option<Tile>; 3]; 3],
     player_tile: Tile,
+    rng: IsaacRng,
 }
 
 impl Game {
@@ -104,6 +107,7 @@ impl Game {
         Game {
             board: [[None; 3]; 3],
             player_tile,
+            rng: SeedableRng::seed_from_u64(SEED),
         }
     }
 
@@ -202,16 +206,24 @@ impl Game {
         }
 
         // TODO: use more complicated strategy
+        let mut empty_tiles = Vec::<(usize, usize)>::new();
         for (x, row) in self.board.iter_mut().enumerate() {
             for (y, tile) in row.iter_mut().enumerate() {
                 if tile.is_some() {
                     continue;
                 }
-                tile.replace(self.player_tile.other());
-                return Some(GameMove::new(x, y).unwrap());
+                empty_tiles.push((x,y));
             }
         }
 
-        None
+        if empty_tiles.is_empty() {
+            return None
+        }
+
+        let app_move = self.rng.gen_range(0, empty_tiles.len());
+        let app_move = empty_tiles[app_move];
+        self.board[app_move.0][app_move.1] = Some(self.player_tile.other());
+
+        Some(GameMove::new(app_move.0, app_move.1).unwrap())
     }
 }
