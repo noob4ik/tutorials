@@ -32,7 +32,7 @@ pub struct GameStatistics {
     // overall players count that has been created
     pub games_created: u64,
     // overall move count that has been made
-    pub moves_count: i64,
+    pub moves_count: u64,
 }
 
 pub struct GameManager {
@@ -124,11 +124,6 @@ impl GameManager {
             .players_created
             .add_assign(1);
 
-        self.game_statistics
-            .borrow_mut()
-            .games_created
-            .add_assign(1);
-
         self.create_game(player_name)
     }
 
@@ -172,7 +167,7 @@ impl GameManager {
         player.borrow_mut().game = Rc::downgrade(&game);
 
         if player_tile == Tile::O {
-            game.borrow_mut().app_move();
+            game.borrow_mut().app_move(self.game_statistics.borrow().games_created);
         }
         let response = self.serialize_game_state(&game);
 

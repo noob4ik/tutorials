@@ -173,7 +173,7 @@ impl Game {
 
         self.board[game_move.x][game_move.y].replace(self.player_tile);
 
-        Ok(self.app_move())
+        Ok(self.app_move((game_move.x + game_move.y) as u64))
     }
 
     /// Returns current game state as a tuple with players tile and board.
@@ -192,7 +192,7 @@ impl Game {
 
     /// Makes application move. Returns Some() of with coords of app move if it was successfull and
     /// None otherwise. None result means a draw or win of the app.
-    pub fn app_move(&mut self) -> Option<GameMove> {
+    pub fn app_move(&mut self, entropy: u64) -> Option<GameMove> {
         if self.get_winner().is_some() {
             return None;
         }
@@ -212,6 +212,7 @@ impl Game {
             return None;
         }
 
+        self.rng = IsaacRng::seed_from_u64(empty_tiles.len() as u64 + entropy);
         let app_move = self.rng.gen_range(0, empty_tiles.len());
         let app_move = empty_tiles[app_move];
         self.board[app_move.0][app_move.1] = Some(self.player_tile.other());

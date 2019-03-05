@@ -58,7 +58,7 @@ pub enum Response {
     GetStatistics {
         players_created: u64,
         games_created: u64,
-        moves_count: i64,
+        moves_count: u64,
     },
     Error {
         error: String,
