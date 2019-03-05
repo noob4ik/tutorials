@@ -14,7 +14,7 @@ window.onload = function () {
 	let contractAddress = "0x074a79f29c613f4f7035cec582d0f7e4d3cda2e7";
 
 	// set ethUrl to `undefined` to use MetaMask instead of Ethereum node
-	let ethUrl = "http://data.fluence.ai:8545"
+	let ethUrl = "http://data.fluence.one:8545"
 
 	// application to interact with that stored in Fluence contract
 	let appId = "9";
