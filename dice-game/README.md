@@ -1,3 +1,15 @@
+- [Game of Dice](#game-of-dice)
+  - [Game of Dice backend](#game-of-dice-backend)
+    - [Setting up Rust](#setting-up-rust)
+    - [Creating a dice-game backend part](#creating-a-dice-game-backend-part)
+    - [Compiling to WebAssembly](#compiling-to-webassembly)
+  - [Publishing](#publishing)
+  - [Game of Dice frontend](#game-of-dice-frontend)
+  - [Getting the code](#getting-the-code)
+  - [Reviewing the code](#reviewing-the-code)
+  - [Running the app](#running-the-app)
+  - [Hacking!](#hacking)
+
 # Game of Dice
 TODO: game description
 
