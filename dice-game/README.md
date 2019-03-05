@@ -5,8 +5,8 @@
 - [Compiling Rust to WebAssembly](#compiling-rust-to-webassembly)
 - [Publishing](#publishing)
 - [Game of Dice frontend](#game-of-dice-frontend)
-- [Getting the code](#getting-the-code)
-- [Reviewing the code](#reviewing-the-code)
+- [Getting the frontend code](#getting-the-frontend-code)
+- [Reviewing the frontend code](#reviewing-the-frontend-code)
 - [Running the app](#running-the-app)
 - [Hacking!](#hacking)
 
@@ -194,7 +194,7 @@ _For this part, you will need installed `npm`. Please refer to [npm docs](https:
 
 Having a [Rust backend for the Game of Dice (TODO: link)](../../../vm/examples/dice), the next logical step is to provide potential users with a web interface for the game. 
 
-## Getting the code
+## Getting the frontend code
 There is already an existing web app for the Game of Dice, we can start from here. You can get it by cloning the repository:
 ```bash
 ~ $ git clone https://github.com/fluencelabs/dice-web-example
@@ -207,7 +207,7 @@ There are just three files (except for README, LICENSE and .gitignore):
 - `webpack.config.js` needed for the webpack to work
 - `index.js` that imports `fluence` js library and shows how to connect to a cluster
 
-## Reviewing the code
+## Reviewing the frontend code
 Let's take a look at `index.js`.
 
 First, we locate needed html elements to use them later:
