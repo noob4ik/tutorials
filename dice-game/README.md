@@ -5,7 +5,6 @@
 - [Compiling Rust to WebAssembly](#compiling-rust-to-webassembly)
 - [Publishing](#publishing)
 - [Game of Dice frontend](#game-of-dice-frontend)
-- [Getting the frontend code](#getting-the-frontend-code)
 - [Reviewing the frontend code](#reviewing-the-frontend-code)
 - [Running the app](#running-the-app)
 - [Hacking!](#hacking)
