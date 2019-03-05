@@ -1,5 +1,5 @@
 [submodule "llamadb/example-sqldb"]
-	path = llamadb/example-sqldb
+	path = llamadb/frontend
 	url = https://github.com/fluencelabs/example-sqldb
 [submodule "example-streamr-integration"]
 	path = streamr
