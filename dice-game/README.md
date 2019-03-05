@@ -358,7 +358,7 @@ Ideas to implement:
 #### Frontend
 - Add leaders board
 
-You can use `function getBalance(id)` from `index.js`
+You can use `GetBalance` method:
 ```js
 { "player_id": ${id}, "action": "GetBalance"}
 ```
