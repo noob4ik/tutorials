@@ -60,7 +60,7 @@ fn do_request(req: String) -> AppResult<Value> {
 #[invocation_handler]
 fn main(req: String) -> String {
     match do_request(req) {
-        Ok(req) => req.to_string(),
+        Ok(res) => res.to_string(),
         Err(err) => {
             let response = Response::Error {
                 message: err.to_string(),
