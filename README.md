@@ -19,5 +19,5 @@ Following the code, it should be easy to build your own random-based privacy-fre
 ## [Game: dice](dice-game/)
 A simple dice roll game, where you can bet on the outcame, and earn or lose some points.
 
-## [Integration](streamr/): Pull analytics data from [Streamr](https://www.streamr.com/)
+## [Integration: Pull analytics data from Streamr](streamr/)
 This package is an example of how Fluence could be used to calculate different aggregates over analytics data in a decentralized fashion. Data is pulled from [Streamr](https://www.streamr.com/), stored in-memory with Llamadb SQL database, and then queried via Fluence JS SDK.
