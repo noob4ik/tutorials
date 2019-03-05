@@ -1,7 +1,8 @@
 # Game of Dice
-- [Setting up Rust](#setting-up-rust)
-- [Creating a dice-game backend part](#creating-a-dice-game-backend-part)
-- [Compiling to WebAssembly](#compiling-to-webassembly)
+- [Set up Rust](#set-up-rust)
+- [Use existing code](#use-existing-code)
+- [Implement requests handling](#implement-requests-handling)
+- [Compiling Rust to WebAssembly](#compiling-rust-to-webassembly)
 - [Publishing](#publishing)
 - [Game of Dice frontend](#game-of-dice-frontend)
 - [Getting the code](#getting-the-code)
@@ -9,9 +10,11 @@
 - [Running the app](#running-the-app)
 - [Hacking!](#hacking)
 
-In this simple dice game, you can bet your points against dice rolled by the backend. Backend handles user registration, balances and dice generation, and frontend gives the end-user an interface to play the game.
+In this simple dice game, you can bet your points against dice rolled by the backend. 
 
-Backend will be developed in Rust, because of it's tremendous WebAssembly support. And for the frontend, JavaScript and some HTML will do. _(With some TypeScript under the hood 😉)_
+Backend handles user registration, balances and dice generation, and frontend gives the end-user an interface to play the game.
+
+Backend will be developed in Rust, because of it's tremendous WebAssembly support. And for the frontend, JavaScript and some HTML will do. (With some TypeScript under the hood 😉)
 
 ## Set up Rust
 
@@ -98,7 +101,7 @@ All game logic is implemented inside [`GameManager`](backend/src/game_manager.rs
 - `bet` - makes a bet with `player_id`, `guess`, `bet_amount`, returning an outcome and a player's balance.
 - `get_player_balance` - returns the balances for the player specified by `player_id`.
 
-At first, we need to create a `GameManager` instance. It should be global, because the game state should be persisted between calls. Since Wasm environment is single-threaded, `thread_local!` macro is used here for the global state storage.
+We need to create a `GameManager` instance to store a game state. As the game state should be persisted between calls, `GameManager` should be a global variable. Since Wasm environment is single-threaded, `thread_local!` macro is used here for the global state storage.
 
 ```Rust
 thread_local! {
@@ -112,7 +115,7 @@ thread_local! {
 
 _You can find full working example in the [`lib.rs.full`](backend/src/lib.rs.full) file._
 
-Then let's write a functions that parses and performs requests. There are `Request` and `Response` enums in the [`request_response.rs`](backend/src/request_response.rs) that could be serialized and deserialized by JSON framework named `serde`. 
+There are `Request` and `Response` enums in the [`request_response.rs`](backend/src/request_response.rs) that could be serialized and deserialized by JSON framework named `serde`. 
 
 These enums are to be used to parse requests and send back reponses. With the great power of `serde_json` routing can be easily implement via pattern matching:
 
@@ -184,7 +187,7 @@ backend $ ls -lh target/wasm32-unknown-unknown/release/dice_game.wasm
 ```
 
 ## Publishing
-TODO
+Let's refer to the [Fluence Book](https://fluence.network/docs/book/quickstart/publish.html) to guide us through the publishing process.
 
 ## Game of Dice frontend
 _For this part, you will need installed `npm`. Please refer to [npm docs](https://www.npmjs.com/get-npm) for installation instructions._
