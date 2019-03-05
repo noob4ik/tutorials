@@ -192,7 +192,7 @@ Let's refer to the [Fluence Book](https://fluence.network/docs/book/quickstart/p
 ## Game of Dice frontend
 _For this part, you will need installed `npm`. Please refer to [npm docs](https://www.npmjs.com/get-npm) for installation instructions._
 
-Having a [Rust backend for the Game of Dice (TODO: link)](../../../vm/examples/dice), the next logical step is to provide potential users with a web interface for the game. 
+Having a [Rust backend](#implement-requests-handling) for the Game of Dice, the next logical step is to provide potential users with a web interface for the game. 
 
 ## Getting the frontend code
 There is already an existing web app for the Game of Dice, we can start from here. You can get it by cloning the repository:
