@@ -194,20 +194,12 @@ _For this part, you will need installed `npm`. Please refer to [npm docs](https:
 
 Having a [Rust backend](#implement-requests-handling) for the Game of Dice, the next logical step is to provide potential users with a web interface for the game. 
 
-## Getting the frontend code
-There is already an existing web app for the Game of Dice, we can start from here. You can get it by cloning the repository:
-```bash
-~ $ git clone https://github.com/fluencelabs/dice-web-example
-~ $ cd dice-web-example
-~/dice-web-example $ 
-```
-
-There are just three files (except for README, LICENSE and .gitignore):
+## Reviewing the frontend code
+There are just three files (except for README, LICENSE and .gitignore) in `dice-game/frontend`:
 - `package.json` that declares needed dependencies
 - `webpack.config.js` needed for the webpack to work
 - `index.js` that imports `fluence` js library and shows how to connect to a cluster
 
-## Reviewing the frontend code
 Let's take a look at `index.js`.
 
 First, we locate needed html elements to use them later:
