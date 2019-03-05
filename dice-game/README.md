@@ -354,7 +354,7 @@ Open [http://localhost:8080/](http://localhost:8080/), and you will see a joinin
 
 <div style="text-align:center">
 <kbd>
-<img src="../img/joining.png" width="202px"/>
+<img src="img/joining.png" width="202px"/>
 </kbd>
 <br><br><br>
 </div>
@@ -363,7 +363,7 @@ And shortly after that, a betting screen:
 
 <div style="text-align:center">
 <kbd>
-<img src="../img/betting.png" width="580px"/>
+<img src="img/betting.png" width="580px"/>
 </kbd>
 <br><br><br>
 </div>
@@ -372,7 +372,7 @@ Let's make a bet!
 
 <div style="text-align:center">
 <kbd>
-<img src="../img/you_won.png" width="573px"/>
+<img src="img/you_won.png" width="573px"/>
 </kbd>
 <br><br><br>
 </div>
