@@ -1,6 +1,20 @@
 # Guessing game
-## Running
+## Compiling backend to WebAssembly
+Please refer to [Fluence Book](https://fluence.network/docs/book/quickstart/backend.html) for instructions on how to setup Rust and WebAssembly, and build Fluence apps.
+
+If you have everything installed, it's very simple:
 ```bash
+$ cd backend/
+$ cargo build --release --target wasm32-unknown-unknown
+```
+
+And then publish! [Fluence Book](https://fluence.network/docs/book/quickstart/publish.html) also has detailed instructions on publishing your apps.
+
+## Running the frontend
+You will need installed `npm`.
+
+```bash
+$ cd frontend/
 $ npm install
 $ npm run start
 ...
