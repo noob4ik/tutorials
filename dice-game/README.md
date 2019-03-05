@@ -49,9 +49,9 @@ Now it's time to create a Rust dice-game project!
 
 ### Creating a dice-game backend part
 
-The game logic of dice-game is implemented ourselves, your task is to implement functions routing and entry function for interaction with Fluence node in `lib.rs` file. 
+The game logic of dice-game is already implemented in [`GameManager`](backend/src/game_manager.rs), your task is to implement functions routing and entry function for interaction with Fluence node in [`lib.rs`](backend/src/lib.rs) file. 
 
-So, open `lib.rs` in your favorite text editor, you can see the following code
+So, open it in your favorite text editor, you can see the following code
 
 ```Rust
 mod error_type;
@@ -79,7 +79,7 @@ mod settings {
 This snippet imports all modules and crates and also define settings that manages the game. All dice game logic is implemented in `GameManager` struct. It maintains linked hash map with users and their balances. This hash map contains maximum `PLAYERS_MAX_COUNT` players and deletes the oldest one if limit is exceeded.
 
 It has three export functions: 
-- `join` - creates new player returns it's player_id
+- `join` - creates new player, returns it's player_id
 - `bet` - makes a bet with player_id, placement, bet_amount, returns outcome and new player balance
 - `get_player_balance` - returns player balance for a given player_id
 
@@ -93,7 +93,7 @@ thread_local! {
 
 `RefCell` here is needed to provide interior mutability since `thread_local!` assume that its content is immutable.
 
-Then let's write a functions that parses requests and perform them. There are Request and Response enums that could be serialized and deserialized by `serde`. They are supposed to be used for deserialize requests and make responses. With great power of `serde_json` this function can be implemented like this:
+Then let's write a functions that parses and performs requests. There are Request and Response in [`request_response.rs`](backend/src/request_response.rs) enums that could be serialized and deserialized by `serde`. They are supposed to be used for deserialize requests and make responses. With great power of `serde_json` this function can be implemented like this:
 
 ```Rust
 fn do_request(req: String) -> AppResult<Value> {
@@ -136,7 +136,9 @@ fn main(req: String) -> String {
 }
 ```
 
-Finally, we have `main` function that receives json as string, process it by `do_request` and returns back also a json as string. 
+Finally, we have `main` function that receives json as string, process it by `do_request` and returns back also a json as string.
+
+Also there is [`lib.rs.full`](backend/src/lib.rs.full) file that contains full working code.
 
 ### Compiling to WebAssembly
 
