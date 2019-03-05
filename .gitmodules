@@ -5,6 +5,3 @@
 	path = streamr
 	url = git@github.com:fluencelabs/example-streamr-integration.git
 
-[submodule "dice-game/frontend"]
-	path = dice-game/frontend
-	url = git@github.com:fluencelabs/dice-web-example.git
