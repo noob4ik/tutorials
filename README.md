@@ -16,5 +16,8 @@ Inpsired by an example from [the Rust Book](https://doc.rust-lang.org/1.30.0/boo
 
 [Following the code](guessing-game/), it should be easy to build your own random-based privacy-free decentralized game backend.
 
+## Game: dice
+A [simple dice roll game](dice-game/), where you can bet on the outcame, and earn or lose some points.
+
 ## Integration: Pull analytics data from [Streamr](https://www.streamr.com/)
 This package is an example of how Fluence could be used to calculate different aggregates over analytics data in a decentralized fashion. Data is pulled from [Streamr](https://www.streamr.com/), stored in-memory with Llamadb SQL database, and then queried via Fluence JS SDK.

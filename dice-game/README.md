@@ -1,10 +1,10 @@
-# Game of Dice
+# Dice game
 - [Set up Rust](#set-up-rust)
 - [Use existing code](#use-existing-code)
 - [Implement requests handling](#implement-requests-handling)
 - [Compiling Rust to WebAssembly](#compiling-rust-to-webassembly)
 - [Publishing](#publishing)
-- [Game of Dice frontend](#game-of-dice-frontend)
+- [Dice game frontend](#game-of-dice-frontend)
 - [Reviewing the frontend code](#reviewing-the-frontend-code)
 - [Running the app](#running-the-app)
 - [Hacking!](#hacking)
@@ -188,10 +188,10 @@ backend $ ls -lh target/wasm32-unknown-unknown/release/dice_game.wasm
 ## Publishing
 Let's refer to the [Fluence Book](https://fluence.network/docs/book/quickstart/publish.html) to guide us through the publishing process.
 
-## Game of Dice frontend
+## Dice game frontend
 _For this part, you will need installed `npm`. Please refer to [npm docs](https://www.npmjs.com/get-npm) for installation instructions._
 
-Having a [Rust backend](#implement-requests-handling) for the Game of Dice, the next logical step is to provide potential users with a web interface for the game. 
+Having a [Rust backend](#implement-requests-handling) for the Dice game, the next logical step is to provide potential users with a web interface for the game. 
 
 ## Reviewing the frontend code
 There are three files of interest in `dice-game/frontend`:
