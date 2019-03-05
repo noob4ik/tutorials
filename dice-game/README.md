@@ -4,7 +4,7 @@
 - [Implement requests handling](#implement-requests-handling)
 - [Compiling Rust to WebAssembly](#compiling-rust-to-webassembly)
 - [Publishing](#publishing)
-- [Dice game frontend](#game-of-dice-frontend)
+- [Dice game frontend](#dice-game-frontend)
 - [Reviewing the frontend code](#reviewing-the-frontend-code)
 - [Running the app](#running-the-app)
 - [Hacking!](#hacking)
