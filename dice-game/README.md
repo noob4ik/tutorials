@@ -157,6 +157,9 @@ If everything goes well, you should have a `.wasm` file deep in `target`. Let's 
 -rwxr-xr-x  2 user  user  1.4M Feb 11 11:59 target/wasm32-unknown-unknown/release/dice_game.wasm
 ```
 
+## Publishing
+TODO
+
 ## Game of Dice frontend
 _For this part, you will need installed `npm`. Please refer to [npm docs](https://www.npmjs.com/get-npm) for installation instructions._
 
@@ -301,3 +304,9 @@ frontend $ npm run start
 Open [http://localhost:8080/](http://localhost:8080/), and you will see a simple registration form:
 
 TODO: REGISTRATION SCREENSHOT
+
+## Hacking!
+Ideas to implement:
+- Add names support on backend
+- Add game history support on backend
+- Make web interface fancier
