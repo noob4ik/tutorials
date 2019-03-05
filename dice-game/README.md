@@ -6,6 +6,10 @@
 - [Publishing](#publishing)
 - [Dice game frontend](#dice-game-frontend)
 - [Reviewing the frontend code](#reviewing-the-frontend-code)
+  - [SDK API](#sdk-api)
+  - [connect()](#connect)
+  - [join()](#join)
+  - [roll()](#roll)
 - [Running the app](#running-the-app)
 - [Hacking!](#hacking)
 
