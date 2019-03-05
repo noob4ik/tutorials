@@ -119,9 +119,6 @@ impl GameManager {
             return self.serialize_game_state(&game);
         }
 
-        let game = Rc::new(RefCell::new(Game::new(self.generate_tile())));
-        player.borrow_mut().game = Rc::downgrade(&game);
-
         self.game_statistics
             .borrow_mut()
             .players_created
@@ -132,10 +129,7 @@ impl GameManager {
             .games_created
             .add_assign(1);
 
-        let result_response = self.serialize_game_state(&game);
-        self.games.push_back(game);
-
-        result_response
+        self.create_game(player_name)
     }
 
     pub fn serialize_game_state(&self, game: &Rc<RefCell<Game>>) -> AppResult<Value> {
@@ -165,6 +159,30 @@ impl GameManager {
             moves_count: self.game_statistics.borrow().moves_count,
         };
         serde_json::to_value(response).map_err(Into::into)
+    }
+
+    /// Creates a new game for provided player. Note that the previous one is deleted (if it
+    /// present) and won't be accessed anymore. Returns CreateGameResponse as a serde_json Value if
+    /// 'X' tile type has been chosen and MoveResponse otherwise.
+    pub fn create_game(&mut self, player_name: String) -> AppResult<Value> {
+        let player = self.get_player(&player_name)?;
+
+        let player_tile = self.generate_tile();
+        let game = Rc::new(RefCell::new(Game::new(player_tile)));
+        player.borrow_mut().game = Rc::downgrade(&game);
+
+        if player_tile == Tile::O {
+            game.borrow_mut().app_move();
+        }
+        let response = self.serialize_game_state(&game);
+
+        self.game_statistics
+            .borrow_mut()
+            .games_created
+            .add_assign(1);
+
+        self.games.push_back(game);
+        response
     }
 
     fn generate_tile(&self) -> Tile {

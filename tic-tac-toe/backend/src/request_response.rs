@@ -34,6 +34,9 @@ pub enum Request {
     Login {
         player_name: String,
     },
+    CreateGame {
+        player_name: String,
+    },
     GetGameState {
         player_name: String,
     },

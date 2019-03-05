@@ -56,6 +56,10 @@ fn do_request(req: String) -> AppResult<Value> {
             GAME_MANAGER.with(|gm| gm.borrow_mut().login(player_name))
         }
 
+        Request::CreateGame {player_name} => {
+            GAME_MANAGER.with(|gm| gm.borrow_mut().create_game(player_name))
+        }
+
         Request::GetGameState { player_name } => {
             GAME_MANAGER.with(|gm| gm.borrow().get_game_state(player_name))
         }
