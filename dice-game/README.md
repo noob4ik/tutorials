@@ -1,9 +1,7 @@
 # Game of Dice
-
-- [Game of Dice backend](#game-of-dice-backend)
-  - [Setting up Rust](#setting-up-rust)
-  - [Creating a dice-game backend part](#creating-a-dice-game-backend-part)
-  - [Compiling to WebAssembly](#compiling-to-webassembly)
+- [Setting up Rust](#setting-up-rust)
+- [Creating a dice-game backend part](#creating-a-dice-game-backend-part)
+- [Compiling to WebAssembly](#compiling-to-webassembly)
 - [Publishing](#publishing)
 - [Game of Dice frontend](#game-of-dice-frontend)
 - [Getting the code](#getting-the-code)
@@ -11,11 +9,11 @@
 - [Running the app](#running-the-app)
 - [Hacking!](#hacking)
 
-TODO: game description
+In this simple dice game, you can bet your points against dice rolled by the backend. Backend handles user registration, balances and dice generation, and frontend gives the end-user an interface to play the game.
 
-## Game of Dice backend
+Backend will be developed in Rust, because of it's tremendous WebAssembly support. And for the frontend, JavaScript and some HTML will do. _(With some TypeScript under the hood 😉)_
 
-### Setting up Rust
+## Set up Rust
 
 Install rust compiler and it's tools:
 ```bash
@@ -59,17 +57,19 @@ info: installing component 'rust-std' for 'wasm32-unknown-unknown'
 
 Now it's time to create a Rust dice-game project!
 
-### Creating a dice-game backend part
+## Use existing code
 
-The game logic of dice-game is already implemented in [`GameManager`](backend/src/game_manager.rs), your task is to implement functions routing and entry function for interaction with Fluence node in [`lib.rs`](backend/src/lib.rs) file. 
+As most of the game is already implemented in the [`GameManager`](backend/src/game_manager.rs), your task will be to handle users' interaction: route their requests, handle errors, and bring the game to life! All this should be done inside [`lib.rs`](backend/src/lib.rs) file. 
 
-So, open it in your favorite text editor, you can see the following code
+Open `lib.rs` in your favorite text editor, you can see the following code
 
 ```Rust
+// Describe modules used in the backend
 mod error_type;
 mod game_manager;
 mod request_response;
 
+// Import needed libraries
 use crate::error_type::AppResult;
 use crate::game_manager::GameManager;
 use crate::request_response::{Request, Response};
@@ -78,6 +78,7 @@ use fluence::sdk::*;
 use serde_json::Value;
 use std::cell::RefCell;
 
+// Define game settings
 mod settings {
     pub const PLAYERS_MAX_COUNT: usize = 1024;
     pub const SEED: u64 = 12345678;
@@ -88,14 +89,16 @@ mod settings {
 }
 ```
 
-This snippet imports all modules and crates and also define settings that manages the game. All dice game logic is implemented in `GameManager` struct. It maintains linked hash map with users and their balances. This hash map contains maximum `PLAYERS_MAX_COUNT` players and deletes the oldest one if limit is exceeded.
+This snippet imports needed modules and crates (libraries), and also defines the `settings` module with different game constants.
 
-It has three export functions: 
-- `join` - creates new player, returns it's player_id
-- `bet` - makes a bet with player_id, placement, bet_amount, returns outcome and new player balance
-- `get_player_balance` - returns player balance for a given player_id
+All game logic is implemented inside [`GameManager`](backend/src/game_manager.rs) struct. It maintains a linked hash map with users and their balances. This hash map contains up to `PLAYERS_MAX_COUNT` players, and deletes the oldest one if limit is exceeded.
 
-At first, we need to define create `GameManager` instance. It should be global since the game state needs to be persisted between module calls. There are some possibilities to define global variable that does heap allocations in Rust, but in case of single-threaded Wasm environment the most suitable one is using thread local storage by `thread_local!`:
+`GameManager` has three public functions: 
+- `join` - creates new player, returns it's `player_id`.
+- `bet` - makes a bet with `player_id`, `guess`, `bet_amount`, returning an outcome and a player's balance.
+- `get_player_balance` - returns the balances for the player specified by `player_id`.
+
+At first, we need to create a `GameManager` instance. It should be global, because the game state should be persisted between calls. Since Wasm environment is single-threaded, `thread_local!` macro is used here for the global state storage.
 
 ```Rust
 thread_local! {
@@ -103,9 +106,15 @@ thread_local! {
 }
 ```
 
-`RefCell` here is needed to provide interior mutability since `thread_local!` assume that its content is immutable.
+`RefCell` here is needed to provide interior mutability since `thread_local!` assume that its content is immutable. It's a technical detail.
 
-Then let's write a functions that parses and performs requests. There are Request and Response in [`request_response.rs`](backend/src/request_response.rs) enums that could be serialized and deserialized by `serde`. They are supposed to be used for deserialize requests and make responses. With great power of `serde_json` this function can be implemented like this:
+## Implement requests handling
+
+_You can find full working example in the [`lib.rs.full`](backend/src/lib.rs.full) file._
+
+Then let's write a functions that parses and performs requests. There are `Request` and `Response` enums in the [`request_response.rs`](backend/src/request_response.rs) that could be serialized and deserialized by JSON framework named `serde`. 
+
+These enums are to be used to parse requests and send back reponses. With the great power of `serde_json` routing can be easily implement via pattern matching:
 
 ```Rust
 fn do_request(req: String) -> AppResult<Value> {
@@ -127,13 +136,17 @@ fn do_request(req: String) -> AppResult<Value> {
 }
 ```
 
-We have one step left on fully working example. All we need is to define invocation handler function that manages requests from a `client-side` to `do_request`, let's call it main.
+So, we have requests parsing and routing implemented! Great, now we need to tell Fluence how to call our code. For that, we need to mark some function with `#[invokation_handler]` macro. Let's call it `main`:
+```rust
+#[invocation_handler]
+fn main(req: String) -> String
+```
 
-To make main function called from the Fluence external code `#[invocation_handler]` macro can be used. Function marked with `#[invocation_handler]` is called a gateway function. It is an entrypoint to your application, all transactions sent by users will be passed to that function, and it's result will be available to users. Gateway function can receive and return either String or Vec<u8>.
+Such a function is called a _gateway function_. It is an entrypoint to your backend, and can take and return a `String` or a `Vec<u8>`, depending on your application needs. `String` seems like a better for for a JSON-based protocol, so we'll go with that. 
 
-It is possible here to return either String or Vec<u8> from main but it is more easy to return String:
+`do_request` returns a `Result`, possibly with errors, let's convert it to a `String`:
 
-```Rust
+```rust
 #[invocation_handler]
 fn main(req: String) -> String {
     match do_request(req) {
@@ -148,16 +161,17 @@ fn main(req: String) -> String {
 }
 ```
 
-Finally, we have `main` function that receives json as string, process it by `do_request` and returns back also a json as string.
+Finally, we have a `main` function that can receive JSON as a `String`, process it by `do_request`, and return a JSON result.
 
-Also there is [`lib.rs.full`](backend/src/lib.rs.full) file that contains full working code.
+## Compiling Rust to WebAssembly
 
-### Compiling to WebAssembly
+Run the following code to build a `.wasm` file from your Rust code in the project root directory.
 
-Run the following code to build a `.wasm` file from your Rust code in the project root directory (NOTE: Downloading and compiling dependencies might take a few minutes).
+NOTE: downloading and compiling dependencies might take a few minutes.
 
 ```bash
-~/hello-world $ cargo +nightly build --target wasm32-unknown-unknown --release
+$ cd dice-game/backend
+backend $ cargo +nightly build --target wasm32-unknown-unknown --release
     Updating crates.io index
     ...
     Finished release [optimized] target(s) in 1m 16s
@@ -165,8 +179,8 @@ Run the following code to build a `.wasm` file from your Rust code in the projec
 
 If everything goes well, you should have a `.wasm` file deep in `target`. Let's check it:
 ```bash
-~/hello-world $ ls -lh target/wasm32-unknown-unknown/release/dice_game.wasm
--rwxr-xr-x  2 user  user  1.4M Feb 11 11:59 target/wasm32-unknown-unknown/release/dice_game.wasm
+backend $ ls -lh target/wasm32-unknown-unknown/release/dice_game.wasm
+-rwxr-xr-x  2 user  user  1.4M Mar 5 00:00 target/wasm32-unknown-unknown/release/dice_game.wasm
 ```
 
 ## Publishing
