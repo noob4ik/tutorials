@@ -19,10 +19,12 @@ use crate::game::{Game, GameMove, Tile};
 use crate::player::Player;
 use crate::request_response::Response;
 
-use crate::settings::{GAMES_MAX_COUNT, PLAYERS_MAX_COUNT, USER_NAME_MAX_LEN};
+use crate::settings::{PLAYERS_MAX_COUNT, USER_NAME_MAX_LEN};
 use arraydeque::{ArrayDeque, Wrapping};
 use serde_json::Value;
 use std::{cell::RefCell, collections::HashMap, ops::AddAssign, rc::Rc, rc::Weak};
+use rand::{Rng, SeedableRng};
+use rand_isaac::IsaacRng;
 
 pub struct GameStatistics {
     // overall players count that has been registered
@@ -35,7 +37,6 @@ pub struct GameStatistics {
 
 pub struct GameManager {
     players: ArrayDeque<[Rc<RefCell<Player>>; PLAYERS_MAX_COUNT], Wrapping>,
-    games: ArrayDeque<[Rc<RefCell<Game>>; GAMES_MAX_COUNT], Wrapping>,
     // TODO: String key should be replaced with Cow<'a, str>. After that signatures of all public
     // functions also should be changed similar to https://jwilm.io/blog/from-str-to-cow/.
     players_by_name: HashMap<String, Weak<RefCell<Player>>>,
@@ -46,7 +47,6 @@ impl GameManager {
     pub fn new() -> Self {
         GameManager {
             players: ArrayDeque::new(),
-            games: ArrayDeque::new(),
             players_by_name: HashMap::new(),
             game_statistics: RefCell::new(GameStatistics {
                 players_created: 0,
@@ -89,7 +89,7 @@ impl GameManager {
     }
 
     /// Creates a new player with given player name.
-    pub fn create_player(&mut self, player_name: String) -> AppResult<Value> {
+    pub fn login(&mut self, player_name: String) -> AppResult<Value> {
         if player_name.len() > USER_NAME_MAX_LEN {
             return Err(format!(
                 "The user name is too long ({} bytes), the limit is {}",
@@ -99,81 +99,57 @@ impl GameManager {
                 .map_err(Into::into);
         }
 
-        let new_player = Rc::new(RefCell::new(Player::new(player_name.clone())));
-        if let Some(_) = self.players_by_name.get(&player_name) {
-            return Err(
-                "User with this name is already registered, please choose another one".to_owned(),
-            )
-                .map_err(Into::into);
+        if let None = self.players_by_name.get(&player_name) {
+            let new_player = Rc::new(RefCell::new(Player::new(player_name.clone())));
+
+            self.players_by_name
+                .insert(new_player.borrow().name.clone(), Rc::downgrade(&new_player));
+
+            if let Some(prev) = self.players.push_back(new_player) {
+                // if some elements poped from the deque, delete a corresponding weak link from
+                // names_to_players
+                self.players_by_name.remove(&prev.borrow().name);
+            }
         }
 
-        self.players_by_name
-            .insert(new_player.borrow().name.clone(), Rc::downgrade(&new_player));
-
-        if let Some(prev) = self.players.push_back(new_player) {
-            // if some elements poped from the deque, delete a corresponding weak link from
-            // names_to_players
-            self.players_by_name.remove(&prev.borrow().name);
+        let player = self.get_player(&player_name).unwrap();
+        if let Some(game) = player.borrow().game.upgrade() {
+            return self.serialize_game_state(game);
         }
 
-        let response = Response::CreatePlayer {
-            result: "A new player has been successfully created".to_owned(),
-        };
+        let game_state = Rc::new(RefCell::new(Game::new(self.generate_tile())));
+        player.borrow_mut().game = Rc::downgrade(&game_state);
 
         self.game_statistics
             .borrow_mut()
             .players_created
             .add_assign(1);
 
-        serde_json::to_value(response).map_err(Into::into)
-    }
-
-    /// Creates a new game for provided player. Note that the previous one is deleted (if it
-    /// present) and won't be accessed anymore. Returns CreateGameResponse as a serde_json Value if
-    /// 'X' tile type has been chosen and MoveResponse otherwise.
-    pub fn create_game(&mut self, player_name: String, player_tile: Tile) -> AppResult<Value> {
-        let player = self.get_player(&player_name)?;
-
-        let game_state = Rc::new(RefCell::new(Game::new(player_tile)));
-        player.borrow_mut().game = Rc::downgrade(&game_state);
-
-        let response = match player_tile {
-            Tile::X => {
-                let response = Response::CreateGame {
-                    result: "A new game has been successfully created".to_owned(),
-                };
-                serde_json::to_value(response)
-            }
-            // if the user chose 'O' tile the app should move first
-            Tile::O => {
-                let app_move = game_state.borrow_mut().app_move().unwrap();
-                let response = Response::PlayerMove {
-                    winner: "None".to_owned(),
-                    coords: (app_move.x, app_move.y),
-                };
-                serde_json::to_value(response)
-            }
-        };
-
         self.game_statistics
             .borrow_mut()
             .games_created
             .add_assign(1);
-        self.games.push_back(game_state);
 
-        response.map_err(Into::into)
+        self.serialize_game_state(game_state)
+    }
+
+    pub fn serialize_game_state(&self, game: Rc<RefCell<Game>>) -> AppResult<Value> {
+        let (chosen_tile, board) = game.borrow().get_state();
+        let response = Response::GetGameState {
+            board,
+            player_tile: chosen_tile.to_char(),
+            winner: match game.borrow().get_winner() {
+                Some(winner) => winner.to_string(),
+                None => "None".to_owned(),
+            }
+        };
+        return serde_json::to_value(response).map_err(Into::into)
     }
 
     /// Returns current game state for provided user as a GetGameStateResponse serde_json Value.
     pub fn get_game_state(&self, player_name: String) -> AppResult<Value> {
         let game = self.get_player_game(&player_name)?;
-        let (chosen_tile, board) = game.borrow().get_state();
-
-        let response = Response::GetGameState {
-            player_tile: chosen_tile.to_char(),
-            board,
-        };
-        serde_json::to_value(response).map_err(Into::into)
+        self.serialize_game_state(game)
     }
 
     /// Returns statistics of application usage.
@@ -184,6 +160,16 @@ impl GameManager {
             moves_count: self.game_statistics.borrow().moves_count,
         };
         serde_json::to_value(response).map_err(Into::into)
+    }
+
+    fn generate_tile(&self) -> Tile {
+        let mut rng = IsaacRng::seed_from_u64(self.game_statistics.borrow().games_created);
+        if rng.gen::<bool>() {
+            Tile::X
+        }
+        else {
+            Tile::O
+        }
     }
 
     fn get_player(&self, player_name: &str) -> AppResult<Rc<RefCell<Player>>> {

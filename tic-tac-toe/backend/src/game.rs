@@ -28,14 +28,6 @@ pub enum Tile {
 }
 
 impl Tile {
-    pub fn from_char(ch: char) -> Option<Self> {
-        match ch {
-            'X' => Some(Tile::X),
-            'O' => Some(Tile::O),
-            _ => None,
-        }
-    }
-
     pub fn to_char(self) -> char {
         match self {
             Tile::X => 'X',

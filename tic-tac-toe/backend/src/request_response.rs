@@ -27,16 +27,12 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize)]
 #[serde(tag = "action")]
 pub enum Request {
-    CreatePlayer {
-        player_name: String,
-    },
     PlayerMove {
         player_name: String,
         coords: (usize, usize),
     },
-    CreateGame {
+    Login {
         player_name: String,
-        player_tile: char,
     },
     GetGameState {
         player_name: String,
@@ -47,19 +43,14 @@ pub enum Request {
 #[derive(Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum Response {
-    CreatePlayer {
-        result: String,
-    },
     PlayerMove {
         winner: String,
         coords: (usize, usize),
     },
-    CreateGame {
-        result: String,
-    },
     GetGameState {
-        player_tile: char,
         board: Vec<char>,
+        player_tile: char,
+        winner: String,
     },
     GetStatistics {
         players_created: u64,

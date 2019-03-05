@@ -33,7 +33,6 @@ use std::cell::RefCell;
 
 mod settings {
     pub const PLAYERS_MAX_COUNT: usize = 1024;
-    pub const GAMES_MAX_COUNT: usize = 1024;
     pub const SEED: u64 = 12345678;
     // to prevent DoS attack with large strings
     pub const USER_NAME_MAX_LEN: usize = 1024;
@@ -52,15 +51,8 @@ fn do_request(req: String) -> AppResult<Value> {
             coords,
         } => GAME_MANAGER.with(|gm| gm.borrow().make_move(player_name, coords)),
 
-        Request::CreatePlayer { player_name } => {
-            GAME_MANAGER.with(|gm| gm.borrow_mut().create_player(player_name))
-        }
-
-        Request::CreateGame { player_name, player_tile } => {
-            let player_tile = game::Tile::from_char(player_tile).ok_or_else(|| {
-                "incorrect tile type, please choose it from {'X', 'O'} set".to_owned()
-            })?;
-            GAME_MANAGER.with(|gm| gm.borrow_mut().create_game(player_name, player_tile))
+        Request::Login { player_name } => {
+            GAME_MANAGER.with(|gm| gm.borrow_mut().login(player_name))
         }
 
         Request::GetGameState { player_name } => {
