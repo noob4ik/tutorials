@@ -201,6 +201,7 @@ There are three files of interest in `dice-game/frontend`:
 
 Let's take a look at `index.js`.
 
+### SDK API
 First, we import Fluence JS SDK, and define two helper functions:
 ```js
 import * as fluence from "fluence";
@@ -222,21 +223,7 @@ Main method in Fluence SDK is `invoke`, it takes a string, and returns an object
 
 So methods `getResultString` and `logResultAsString` are to automate calling `result`, and save some typing. It's not always a good idea to call `result` on every invoke, because result is available only after two Tendermint blocks, so it can take a while. Sometimes a better approach would be to send a batch on `invoke`'s, and then call `result` as you need.
 
-**Moving on.**
-
-On `window.load` we locate needed html elements to use them later:
-```javascript
-// locate html elements
-const statusDiv = document.getElementById('status');
-
-const gameDiv = document.getElementById('game');
-const resultDiv = document.getElementById('result');
-const balanceDiv = document.getElementById('balance');
-const betInput = document.getElementById('bet');
-const guessInput = document.getElementById('guess');
-const rollButton = document.getElementById('roll');
-const historyTable = document.getElementById('history');
-```
+### connect()
 
 Next, connect to the Fluence real-time cluster hosting the app:
 ```javascript
@@ -256,6 +243,7 @@ fluence.connect(contractAddress, appId, ethUrl).then((s) => {
 }).then(() => join());
 ```
 
+### join()
 `join()` sends a request with `{ "action": "Join" }` inside, and then changes some UI elements:
 ```javascript
 // send request to join the game
@@ -263,25 +251,15 @@ function join() {
     let result = session.invoke(`{ "action": "Join" }`);
     getResultString(result).then(function (str) {
         let response = JSON.parse(str);
-        if (response.player_id || response.player_id === 0) {
-            statusDiv.innerText = "You joined to game. Your id is: " + response.player_id;
-            // 100 is hardcoded, because we always register a new player
-            updateBalance(100);
-            startGame(response.player_id);
-        } else {
-            showError("Unable to register: " + str);
-        }
+        ...
+        updateBalance(100);
+        startGame(response.player_id);
+        ...
     });
-}
-
-// hide registration, show game controls and balance
-function startGame(id) {
-    globalInfo.player_id = id;
-    gameDiv.hidden = false;
-    betInput.focus();
 }
 ```
 
+### roll()
 Then we set a callback on roll button to make a bet, and roll the dice by sending a request to the backend:
 ```javascript
 // call roll() on button click
@@ -289,39 +267,23 @@ rollButton.addEventListener("click", roll);
 
 // roll the dice by sending a request to backend, show the outcome and balance
 function roll() {
-    if (checkInput()) {
-        resultDiv.innerHTML = "";
-        let request = JSON.stringify(betRequest());
-        let result = session.invoke();
-        getResultString(result).then(str => {
-            let response = JSON.parse(str);
-            if (response.outcome) {
-                showResult(parseInt(response.outcome), guess);
-                saveGame(bet, response);
-            } else {
-                showError("Unable to roll: " + str);
-            }
-        });
-    }
+    ...
+    let request = betRequest();
+    let result = session.invoke(request);
+    getResultString(result).then(str => {
+        let response = JSON.parse(str);
+        ...
+        showResult(parseInt(response.outcome), guess);
+        saveGame(bet, response);
+        ...
+    });
 }
 ```
 
 There are few helper functions that build a JSON request, validate user input, and update UI in different ways:
 ```js
 // build a bet JSON request from inputs
-function betRequest() {
-    let bet = parseInt(betInput.value.trim());
-    let guess = parseInt(guessInput.value.trim());
-
-    let request = {
-        player_id: globalInfo.player_id,
-        action: "Bet",
-        placement: guess,
-        bet_amount: parseInt(bet)
-    };
-    
-    return JSON.stringify(request);
-}
+function betRequest() { ... }
 
 // check inputs are valid, and report if they're not
 function checkInput() { ... }
