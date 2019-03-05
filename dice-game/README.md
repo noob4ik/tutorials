@@ -284,6 +284,16 @@ function roll() {
 }
 ```
 
+`roll()` sends the following `Bet` request:
+```js
+{
+    "action": "Bet",
+    "player_id": globalInfo.player_id,
+    "placement": guess,
+    "bet_amount": parseInt(bet)`
+}
+```
+
 There are few helper functions that build a JSON request, validate user input, and update UI in different ways:
 ```js
 // build a bet JSON request from inputs
@@ -345,7 +355,15 @@ Let's make a bet!
 
 ## Hacking!
 Ideas to implement:
-- Add names support on backend
-- Add game history support on backend
-- Add leaders board (use `function getBalance(id)` in `index.js`)
-- 
+#### Frontend
+- Add leaders board
+
+You can use `function getBalance(id)` from `index.js`
+```js
+{ "player_id": ${id}, "action": "GetBalance"}
+```
+- Ability to resume game after a page reload
+
+#### Backend
+- Add names support (instead of ids or whatnot)
+- Add game history support

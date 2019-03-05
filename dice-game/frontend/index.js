@@ -68,19 +68,6 @@ window.onload = function () {
 		betInput.focus();
 	}
 
-	// we could get balance for any player
-	function getBalance(id) {
-		let result = session.invoke(`{ "player_id": ${id}, "action": "GetBalance"}`);
-		return getResultString(result).then(function (str) {
-			let response = JSON.parse(str);
-			if (response.player_balance) {
-				updateBalance(response.player_balance)
-			} else {
-				showError("Unable to get balance: " + str);
-			}
-		});
-	}
-
 	// call roll() on button click
 	rollButton.addEventListener("click", roll);
 
@@ -158,5 +145,18 @@ window.onload = function () {
 	function showError(error) {
 		console.error(error)
 		// TODO: show error visually
+	}
+
+	// hackity-hack! we could get balance for any player
+	function getBalance(id) {
+		let result = session.invoke(`{ "player_id": ${id}, "action": "GetBalance"}`);
+		return getResultString(result).then(function (str) {
+			let response = JSON.parse(str);
+			if (response.player_balance) {
+				updateBalance(response.player_balance)
+			} else {
+				showError("Unable to get balance: " + str);
+			}
+		});
 	}
 };
