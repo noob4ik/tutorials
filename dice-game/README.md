@@ -201,110 +201,139 @@ There are three files of interest in `dice-game/frontend`:
 
 Let's take a look at `index.js`.
 
-First, we locate needed html elements to use them later:
+First, we import Fluence JS SDK, and define two helper functions:
+```js
+import * as fluence from "fluence";
+...
+// save fluence to global variable, so it can be accessed from Developer Console
+window.fluence = fluence;
+
+// convert result to a string
+window.getResultString = function (result) {
+	return result.result().then((r) => r.asString())
+};
+
+window.logResultAsString = function(result) {
+	return getResultString(result).then((r) => console.log(r))
+};
+```
+
+Main method in Fluence SDK is `invoke`, it takes a string, and returns an object similar to promise. Object has a method called `result`. Responses are lazy in Fluence, and `result` retrieves the response of a specific `invoke` from the real-time cluster.
+
+So methods `getResultString` and `logResultAsString` are to automate calling `result`, and save some typing. It's not always a good idea to call `result` on every invoke, because result is available only after two Tendermint blocks, so it can take a while. Sometimes a better approach would be to send a batch on `invoke`'s, and then call `result` as you need.
+
+**Moving on.**
+
+On `window.load` we locate needed html elements to use them later:
 ```javascript
 // locate html elements
-const registerDiv = document.querySelector('#register');
-const usernameInput = document.querySelector('#username');
-const joinButton = document.querySelector('#join');
+const statusDiv = document.getElementById('status');
 
-const gameDiv = document.querySelector('#game');
-const usernameTitle = document.querySelector('#username-title');
-const balanceDiv = document.querySelector('#balance');
-const betInput = document.querySelector('#bet');
-const rollButton = document.querySelector('#roll');
-const historyTable = document.querySelector('#history');
+const gameDiv = document.getElementById('game');
+const resultDiv = document.getElementById('result');
+const balanceDiv = document.getElementById('balance');
+const betInput = document.getElementById('bet');
+const guessInput = document.getElementById('guess');
+const rollButton = document.getElementById('roll');
+const historyTable = document.getElementById('history');
 ```
 
 Next, connect to the Fluence real-time cluster hosting the app:
 ```javascript
-
-// address of the Fluence smart contract on Ethereum.
+// address to Fluence contract in Ethereum blockchain. Interaction with blockchain created by MetaMask or with local Ethereum node
 let contractAddress = "0x074a79f29c613f4f7035cec582d0f7e4d3cda2e7";
 
-// Address of the Ethereum node. If set to `undefined`, MetaMask will be used to send transactions.
-let ethUrl = "http://207.154.240.52:8545/";
+// set ethUrl to `undefined` to use MetaMask instead of Ethereum node
+let ethUrl = "http://data.fluence.one:8545/";
 
-// appId of the backend as seen in Fluence smart contract.
-let appId = "6";
-...
-// create a session between client and backend application
+// application to interact with that stored in Fluence contract
+let appId = "10";
+
+// create a session between client and backend application, and then join the game
 fluence.connect(contractAddress, appId, ethUrl).then((s) => {
-  console.log("Session created");
-  window.session = s;
-  helloBtn.disabled = false;
-});
+    console.log("Session created");
+    window.session = s;
+}).then(() => join());
 ```
 
-Set a callback on `joinButton` to send a registration request to the backend. Upon receiving a success response from the backend, hide registration controls, and show game controls. Also, save `info` to the global `window.info` variable.
+`join()` sends a request with `{ "action": "Join" }` inside, and then changes some UI elements:
 ```javascript
-// call join() on button click
-joinButton.addEventListener("click", join)
-
-// join the game by registering a user
+// send request to join the game
 function join() {
-    const username = usernameInput.value.trim();
-    let result = session.invoke(`{ "username": "${username}", "action": "register" }`);
+    let result = session.invoke(`{ "action": "Join" }`);
     getResultString(result).then(function (str) {
         let response = JSON.parse(str);
-        if (response.success = "true") {
-            startGame(response.info);
+        if (response.player_id || response.player_id === 0) {
+            statusDiv.innerText = "You joined to game. Your id is: " + response.player_id;
+            // 100 is hardcoded, because we always register a new player
+            updateBalance(100);
+            startGame(response.player_id);
         } else {
             showError("Unable to register: " + str);
         }
     });
 }
+
+// hide registration, show game controls and balance
+function startGame(id) {
+    globalInfo.player_id = id;
+    gameDiv.hidden = false;
+    betInput.focus();
+}
 ```
 
-Set a callback on roll button to make a bet, and roll the dice by sending a request to the backend:
+Then we set a callback on roll button to make a bet, and roll the dice by sending a request to the backend:
 ```javascript
-
 // call roll() on button click
 rollButton.addEventListener("click", roll);
 
 // roll the dice by sending a request to backend, show the outcome and balance
 function roll() {
-    let bet = betInput.value.trim();
-    let result = session.invoke(`{ "id": "${window.info.id}", "action": "bet", "value": "${bet}" }`);
-    getResultString(result).then(function (str) {
-        let response = JSON.parse(str);
-        if (response.success = "true") {
-            saveGame(response.info);
-        } else {
-            showError("Unable to roll: " + str);
-        }
-    });
+    if (checkInput()) {
+        resultDiv.innerHTML = "";
+        let request = JSON.stringify(betRequest());
+        let result = session.invoke();
+        getResultString(result).then(str => {
+            let response = JSON.parse(str);
+            if (response.outcome) {
+                showResult(parseInt(response.outcome), guess);
+                saveGame(bet, response);
+            } else {
+                showError("Unable to roll: " + str);
+            }
+        });
+    }
 }
 ```
 
-And a few utility functions to maintain games history, update balance, handling errors and working with Fluence responses:
-```javascript
+There are few helper functions that build a JSON request, validate user input, and update UI in different ways:
+```js
+// build a bet JSON request from inputs
+function betRequest() {
+    let bet = parseInt(betInput.value.trim());
+    let guess = parseInt(guessInput.value.trim());
+
+    let request = {
+        player_id: globalInfo.player_id,
+        action: "Bet",
+        placement: guess,
+        bet_amount: parseInt(bet)
+    };
+    
+    return JSON.stringify(request);
+}
+
+// check inputs are valid, and report if they're not
+function checkInput() { ... }
+
+// display results in UI
+function showResult(fact, guess) { ... }
+
 // prepend game results to the game history table
-function saveGame(info) {
-    updateBalance(info.balance);
-    historyTable.prepend(`<tr><td>${info.bet}</td><td>${info.dice}</td<td>${info.balance}</td>></tr>`);
-}
+function saveGame(bet, response) { ... }
 
-// update balance html
-function updateBalance(balance) {
-    window.info.balance = balance;
-    balanceDiv.innerHTML = info.balance;
-}
-
-// show error to the user
-function showError(error) {
-    console.error(error)
-    // TODO: show error visually
-}
-
-// convert result to a string
-window.getResultString = function (result) {
-    return result.result().then((r) => r.asString())
-};
-
-window.logResultAsString = function(result) {
-    return getResultString(result).then((r) => console.log(r))
-}
+// update balance in UI
+function updateBalance(balance) { ... }
 ```
 
 ## Running the app
@@ -321,12 +350,36 @@ frontend $ npm run start
 ...
 ```
 
-Open [http://localhost:8080/](http://localhost:8080/), and you will see a simple registration form:
+Open [http://localhost:8080/](http://localhost:8080/), and you will see a joining screen:
 
-TODO: REGISTRATION SCREENSHOT
+<div style="text-align:center">
+<kbd>
+<img src="../img/joining.png" width="202px"/>
+</kbd>
+<br><br><br>
+</div>
+
+And shortly after that, a betting screen:
+
+<div style="text-align:center">
+<kbd>
+<img src="../img/betting.png" width="580px"/>
+</kbd>
+<br><br><br>
+</div>
+
+Let's make a bet!
+
+<div style="text-align:center">
+<kbd>
+<img src="../img/you_won.png" width="573px"/>
+</kbd>
+<br><br><br>
+</div>
 
 ## Hacking!
 Ideas to implement:
 - Add names support on backend
 - Add game history support on backend
-- Make web interface fancier
+- Add leaders board (use `function getBalance(id)` in `index.js`)
+- 
