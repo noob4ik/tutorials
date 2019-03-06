@@ -75,13 +75,13 @@ window.onload = function () {
 	function roll() {
 		if (checkInput()) {
 			resultDiv.innerHTML = "";
-			let request = betRequest();
+			let request = rollRequest();
 			let result = session.invoke(request);
 			getResultAsString(result).then(str => {
 				let response = JSON.parse(str);
 				if (response.outcome) {
 					showResult(parseInt(response.outcome), guess);
-					saveGame(bet, response);
+					updateHistoryTable(bet, response);
 				} else {
 					showError("Unable to roll: " + str);
 				}
@@ -90,13 +90,13 @@ window.onload = function () {
 	}
 
 	// build a bet JSON request from inputs
-	function betRequest() {
+	function rollRequest() {
 		let bet = parseInt(betInput.value.trim());
 		let guess = parseInt(guessInput.value.trim());
 
 		let request = {
 			player_id: globalInfo.player_id,
-			action: "Bet",
+			action: "Roll",
 			placement: guess,
 			bet_amount: parseInt(bet)
 		};
@@ -129,7 +129,7 @@ window.onload = function () {
 	}
 
 	// prepend game results to the game history table
-	function saveGame(bet, response) {
+	function updateHistoryTable(bet, response) {
 		updateBalance(response.player_balance);
 		history.unshift(`<tr><td>${bet}</td><td>${response.outcome}</td><td>${response.player_balance}</td></tr>`);
 		historyTable.innerHTML = history.join("");
