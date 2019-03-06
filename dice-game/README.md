@@ -205,7 +205,7 @@ After a successful publishing, you now have a deployed backend app with assigned
 
 <div style="text-align:center">
 <kbd>
-<img src="img/dash.png" width="600px"/>
+<img src="img/dash.png" width="800px"/>
 </kbd>
 <br><br><br>
 </div>
@@ -214,7 +214,7 @@ Click `Apps`, find an App with your `appId` in the list, and click it.
 
 <div style="text-align:center">
 <kbd>
-<img src="img/dash_app.png" width="600px"/>
+<img src="img/dash_app.png" width="800px"/>
 </kbd>
 <br><br><br>
 </div>
@@ -223,7 +223,7 @@ Click the `Check cluster` button, and you will see the height of a blockchain fo
 
 <div style="text-align:center">
 <kbd>
-<img src="img/check_cluster.png" width="400px"/>
+<img src="img/check_cluster.png" width="600px"/>
 </kbd>
 <br><br><br>
 </div>
