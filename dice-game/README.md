@@ -82,7 +82,7 @@ Finally, let's check that everything was set up correctly and compile a sample R
 Now it's time to create a Rust dice-game project! For that, clone this repository, and open `dice-game/backend` directory:
 ```bash
 $ git clone https://github.com/fluencelabs/tutorials
-$ cd tutorials/dice-game/backend
+$ cd tutorials/dice-game/backend/src
 ```
 
 ## Understand existing code
@@ -199,7 +199,7 @@ To build the `.wasm` file, run this from the application directory:
 <small>(note: downloading and compiling dependencies might take a few minutes)</small>
 
 ```bash
-# in directory dice-game/backend
+# in directory dice-game/backend/src
 $ cargo +nightly build --target wasm32-unknown-unknown --release
     Updating crates.io index
     ...
@@ -208,7 +208,8 @@ $ cargo +nightly build --target wasm32-unknown-unknown --release
 
 If everything goes well, you should have a `.wasm` file deep in `target`. Let's check it:
 ```bash
-$ ls -lh target/wasm32-unknown-unknown/release/dice_game.wasm
+# in directory dice-game/backend/src
+$ ls -lh ../target/wasm32-unknown-unknown/release/dice_game.wasm
 -rwxr-xr-x  2 user  user  1.4M Mar 5 00:00 target/wasm32-unknown-unknown/release/dice_game.wasm
 ```
 
