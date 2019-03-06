@@ -6,14 +6,13 @@
 - [Publishing](#publishing)
 - [Dashboard](#dashboard)
 - [Dice game frontend](#dice-game-frontend)
-- [Reviewing the frontend code](#reviewing-the-frontend-code)
-- [package.json](#packagejson)
-- [index.js](#indexjs)
-  - [JS SDK: invoke(), result()](#js-sdk-invoke-result)
-  - [JS SDK: connect()](#js-sdk-connect)
-  - [Game: join()](#game-join)
-  - [Game: roll()](#game-roll)
-- [Running the app](#running-the-app)
+  - [package.json](#packagejson)
+  - [index.js](#indexjs)
+    - [JS SDK: invoke(), result()](#js-sdk-invoke-result)
+    - [JS SDK: connect()](#js-sdk-connect)
+    - [Game: join()](#game-join)
+    - [Game: roll()](#game-roll)
+  - [Running the app](#running-the-app)
 - [Hacking!](#hacking)
     - [Frontend](#frontend)
     - [Backend](#backend)
@@ -224,7 +223,7 @@ Click the `Check cluster` button, and you will see the height of a blockchain fo
 
 <div style="text-align:center">
 <kbd>
-<img src="img/dash_app.png" width="300px"/>
+<img src="img/check_cluster.png" width="400px"/>
 </kbd>
 <br><br><br>
 </div>
@@ -244,12 +243,11 @@ Let's open `dice-game/frontend` directory:
 $ cd ../frontend
 ```
 
-## Reviewing the frontend code
 There are two files of interest in `dice-game/frontend`:
 - [`package.json`](frontend/package.json) that declares needed dependencies
 - [`index.js`](frontend/index.js) that imports `fluence` js library and shows how to connect to a cluster
 
-## package.json
+### package.json
 Fluence JS SDK is specified as a dependency along with `bootstrap`:
 ```json
   "dependencies": {
@@ -260,7 +258,7 @@ Fluence JS SDK is specified as a dependency along with `bootstrap`:
 
 You can find the latest version on [npmjs.org](https://www.npmjs.com/package/fluence).
 
-## index.js
+### index.js
 Now let's look at the [`index.js`](frontend/index.js).
 
 First, we import Fluence JS SDK, and define two helper functions:
@@ -280,12 +278,12 @@ window.logResultAsString = function(result) {
 };
 ```
 
-### JS SDK: invoke(), result()
+#### JS SDK: invoke(), result()
 Main method in Fluence SDK is `invoke`, it takes a string, and returns an object similar to promise. Object has a method called `result`. Responses are lazy in Fluence, and `result` retrieves the response of a specific `invoke` from the real-time cluster.
 
 So methods `getResultAsString` and `logResultAsString` are to automate calling `result`, and save some typing. It's not always a good idea to call `result` on every invoke, because result is available only after two Tendermint blocks, so it can take a while. Sometimes a better approach would be to send a batch on `invoke`'s, and then call `result` as you need.
 
-### JS SDK: connect()
+#### JS SDK: connect()
 
 Next, connect to the Fluence real-time cluster hosting the app:
 ```javascript
@@ -307,7 +305,7 @@ fluence.connect(contractAddress, appId, ethUrl).then((s) => {
 
 Let's move from SDK API to the actual game interface implementation!
 
-### Game: join()
+#### Game: join()
 `join()` sends a request with `{ "action": "Join" }` inside, and then changes some UI elements:
 ```javascript
 // send request to join the game
@@ -323,7 +321,7 @@ function join() {
 }
 ```
 
-### Game: roll()
+#### Game: roll()
 Then we set a callback on roll button to make a bet, and roll the dice by sending a request to the backend:
 ```javascript
 // call roll() on button click
@@ -372,7 +370,7 @@ function saveGame(bet, response) { ... }
 function updateBalance(balance) { ... }
 ```
 
-## Running the app
+### Running the app
 After putting it all together, let's run it:
 
 ```bash
