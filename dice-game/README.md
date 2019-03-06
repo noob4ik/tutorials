@@ -81,8 +81,8 @@ Finally, let's check that everything was set up correctly and compile a sample R
 
 Now it's time to create a Rust dice-game project! For that, clone this repository, and open `dice-game/backend` directory:
 ```bash
-$ git clone https://github.com/fluencelabs/tutorial
-$ cd tutorial/dice-game/backend
+$ git clone https://github.com/fluencelabs/tutorials
+$ cd tutorials/dice-game/backend
 ```
 
 ## Understand existing code
