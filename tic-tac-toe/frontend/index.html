@@ -5,9 +5,18 @@
         <title>Fluence hello world</title>
     </head>
     <body>
-        <input id="login" type="text">
-        <button type="button" id="create-game">login</button>
-        <div id="tictactoe" hidden></div>
+        <form id="login-container">
+            <input id="login" type="text">
+            <button type="button" id="login-action">login</button>
+        </form>
+        <div id="game-board" hidden>
+            <div id="tictactoe"></div>
+            <div id="result" hidden>
+                <div id="result-screen"></div>
+                <button id="new-game" type="button">New Game</button>
+            </div>
+            <button id="logout" type="button">Logout</button>
+        </div>
     </body>
     <script src="bundle.js"></script>
 </html>

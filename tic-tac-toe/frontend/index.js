@@ -1,10 +1,5 @@
 import * as fluence from "fluence";
 
-let globalInfo = {losses_number: 0};
-let history = [];
-
-window.info = globalInfo;
-
 // save fluence to global variable, so it can be accessed from Developer Console
 window.fluence = fluence;
 
@@ -26,7 +21,7 @@ window.onload = function () {
 	let ethUrl = "http://data.fluence.one:8545/";
 
 	// application to interact with that stored in Fluence contract
-	let appId = "35";
+	let appId = "36";
 
 	// create a session between client and backend application
 	fluence.connect(contractAddress, appId, ethUrl).then((s) => {
@@ -37,42 +32,61 @@ window.onload = function () {
 	let BOARD_SIZE = 3;
 	let boxes = [];
 	let EMPTY = "&nbsp;";
-	let current_tile = "X";
+	let player_tile = "X";
+	let player_name;
 
-	let gameBoard = document.getElementById("tictactoe");
+	let gameBoard = document.getElementById("game-board");
+	let resultDiv = document.getElementById("result");
+	let resultScreenDiv = document.getElementById("result-screen");
+	let newGameBtn = document.getElementById("new-game");
+	let loginBtn = document.getElementById("login-action");
+	let logoutBtn = document.getElementById("logout");
+	let loginContainer = document.getElementById("login-container");
 
-	function createPlayer(name) {
-		let request = JSON.stringify({
-			action: "create_player",
-			player_name: name
-		});
+	loginBtn.addEventListener("click", loginGame);
+	logoutBtn.addEventListener("click", logout);
+	newGameBtn.addEventListener("click", newGame);
 
-		console.log("request: " + request);
-
-		getResultString(session.invoke(request)).then((r) => {
-			console.log("response: " + JSON.stringify(r))
-		});
+	function logout() {
+		gameBoard.hidden = true;
+		loginContainer.hidden = false;
 	}
 
-	// created, pending, finished
-	let gameState = "";
-
-	/*
-	{"board":["_","_","_","_","_","_","_","_","_"],"player_tile":"X","winner":"None"}
-	 */
+	function appTile() {
+		return player_tile === "X" ? "O" : "X"
+	}
 
 	function initState(state) {
 		boxes.forEach((v, idx) => {
 			let st = state.board[idx];
 			if (st === "_") v.innerHTML = EMPTY;
 			else v.innerHTML = st;
+			player_tile = state.player_tile;
 		});
-
 	}
 
-	function createGame() {
+	function newGame() {
+		let request = JSON.stringify({
+			action: "CreateGame",
+			player_name: player_name
+		});
 
-		let name = getName();
+		console.log("request: " + request);
+
+		resultDiv.hidden = true;
+
+		getResultString(session.invoke(request)).then((r) => {
+
+			player_tile = r.player_tile;
+			initState(r);
+			console.log("response: " + JSON.stringify(r));
+
+		});
+	}
+
+	function loginGame() {
+
+		let name = document.getElementById("login").value;
 
 		if (name) {
 			let request = JSON.stringify({
@@ -85,17 +99,37 @@ window.onload = function () {
 			getResultString(session.invoke(request)).then((r) => {
 				initState(r);
 				gameBoard.hidden = false;
-				console.log("response: " + JSON.stringify(r))
+				console.log("response: " + JSON.stringify(r));
+				resultScreen(r);
+				player_name = name;
+				loginContainer.hidden = true;
 			});
 		} else {
-			console.log("create game no name")
+			console.log("login no name")
 		}
 	}
 
-	function clearTable() {
-		boxes.forEach((b) => {
-			b.innerHTML = EMPTY;
+	function appMove(result) {
+		let appMove = result.coords;
+		let cell = boxes.find((el) => {
+			return el.game_col === appMove[1] && el.game_row === appMove[0]
 		});
+		setInCell(cell, appTile(), false);
+	}
+
+	function resultScreen(result) {
+		if (result.winner !== "None") {
+			let rsc;
+			if (result.winner === player_tile) {
+				rsc = "You win!";
+			} else {
+				rsc = "You lose!";
+			}
+
+			resultDiv.hidden = false;
+			resultScreenDiv.innerHTML = rsc;
+
+		}
 	}
 
 	function playerMove(name, x, y) {
@@ -109,23 +143,11 @@ window.onload = function () {
 
 		getResultString(session.invoke(request)).then((r) => {
 			console.log("response: " + JSON.stringify(r));
-			if (r.winner === "None") {
-				let appMove = r.coords;
-				let cell = boxes.find((el) => {
-					return el.game_col === appMove[1] && el.game_row === appMove[0]
-				});
-				setInCell(cell, "O", false);
-			} else {
-				console.log("winner: " + r.winner + "!");
-				clearTable()
-			}
-
+			// trick because server returns unsuitable coords if there is no coords
+			if (r.coords[0] >= 0 && r.coords[0] <= 2) appMove(r);
+			if (r.winner !== "None") resultScreen(r);
 		});
 	}
-
-	window.playerMove = playerMove;
-	window.createPlayer = createPlayer;
-	window.createGame = createGame;
 
 	/*
 	 * Initializes the Tic Tac Toe board and starts the game.
@@ -135,7 +157,6 @@ window.onload = function () {
 		board.setAttribute("border", 1);
 		board.setAttribute("cellspacing", 0);
 
-		var identifier = 1;
 		for (var i = 0; i < BOARD_SIZE; i++) {
 			var row = document.createElement('tr');
 			board.appendChild(row);
@@ -145,53 +166,27 @@ window.onload = function () {
 				cell.setAttribute('width', 80);
 				cell.setAttribute('align', 'center');
 				cell.setAttribute('valign', 'center');
-				cell.classList.add('col' + j,'row' + i);
-				cell.identifier = identifier;
 				cell.game_row = i;
 				cell.game_col = j;
-				cell.addEventListener("click", set);
+				cell.addEventListener("click", setAction);
+				cell.innerHTML = EMPTY;
 				row.appendChild(cell);
 				boxes.push(cell);
-				identifier += 1;
 			}
 		}
 
 		document.getElementById("tictactoe").appendChild(board);
-		startNewGame();
 	}
 
-	function getName() {
-		return document.getElementById("login").value
-	}
-
-	let createBtn = document.getElementById("create-game");
-	createBtn.addEventListener("click", createGame);
-
-	function set() {
-		setInCell(this, current_tile, true)
+	function setAction() {
+		setInCell(this, player_tile, true)
 	}
 
 	function setInCell(el, tile, from_player) {
-		let name = getName();
-		console.log(name);
-		console.log(el);
-		if (name) {
-			if (el.innerHTML === EMPTY) {
-				el.innerHTML = tile;
-				if (from_player) playerMove(name, el.game_row, el.game_col)
-			}
-		} else {
-			console.log("no name")
+		if (el.innerHTML === EMPTY) {
+			el.innerHTML = tile;
+			if (from_player) playerMove(player_name, el.game_row, el.game_col)
 		}
-	}
-
-	/*
-	 * New game
-	 */
-	function startNewGame() {
-		boxes.forEach(function (square) {
-			square.innerHTML = EMPTY;
-		});
 	}
 
 	init();
