@@ -1,7 +1,7 @@
 # Dice game
 - [Setting up Rust](#setting-up-rust)
-- [Understand existing code](#understand-existing-code)
-- [Implement requests handling](#implement-requests-handling)
+- [Understanding the existing code](#understanding-the-existing-code)
+- [Implementing requests handling](#implementing-requests-handling)
 - [Compiling Rust to WebAssembly](#compiling-rust-to-webassembly)
 - [Publishing](#publishing)
 - [Dashboard](#dashboard)
@@ -82,17 +82,18 @@ Finally, let's check that everything was set up correctly and compile a sample R
 -rwxr-xr-x  1 user  user   1.4M Feb 11 11:59 test.wasm
 ```
 
-Now it's time to create a Rust dice-game project! For that, clone this repository, and open `dice-game/backend` directory:
+Now it's time to create a Rust dice game project!  
+For that, clone this repository, and open the `dice-game/backend` directory:
 ```bash
 $ git clone https://github.com/fluencelabs/tutorials
 $ cd tutorials/dice-game/backend/src
 ```
 
-## Understand existing code
+## Understanding the existing code
 
-As most of the game is already implemented in the [`GameManager`](backend/src/game_manager.rs), your task will be to handle users' interaction: route their requests, handle errors, and bring the game to life! All this should be done inside [`lib.rs`](backend/src/lib.rs) file. 
+Most of the game logic is already implemented in the [`GameManager`](backend/src/game_manager.rs), so for now your task is to handle user interactions: route client requests, handle errors, and bring the game to life!  
 
-Open `lib.rs` in your favorite text editor, and you will see the following code:
+All this should be done inside [`lib.rs`](backend/src/lib.rs) file, so open it in your favorite text editor, and you should see the following code:
 
 ```Rust
 // Describe modules used in the backend
@@ -120,14 +121,14 @@ mod settings {
 }
 ```
 
-This snippet imports needed modules and crates (libraries), and also defines the `settings` module with different game constants.
+This snippet imports required modules and crates, and also defines the `settings` module with various game constants.
 
-Most of the game logic is implemented inside [`GameManager`](backend/src/game_manager.rs). It maintains a hash map with users and their balances stored in [insertion order](https://contain-rs.github.io/linked-hash-map/linked_hash_map/index.html). This hash map contains up to `PLAYERS_MAX_COUNT` players, and the oldest player is deleted if limit is exceeded.
+Most of the game logic is implemented inside the [`GameManager`](backend/src/game_manager.rs), which maintains a dictionary of users and their balances stored in the [insertion order](https://contain-rs.github.io/linked-hash-map/linked_hash_map/index.html). This dictionary can contain up to `PLAYERS_MAX_COUNT` players: if the limit is exceeded, the oldest player is removed.
 
-`GameManager` has three public functions: 
-- `join` - creates new player, returns it's `player_id`.
-- `roll` - makes a bet with `player_id`, `bet_placement`, `bet_size`, returning an outcome and a player's balance.
-- `get_player_balance` - returns the balances for the player specified by `player_id`.
+The `GameManager` has three public functions: 
+- `join` - creates a new player and returns the player id
+- `roll` - makes a bet, returns the outcome and the new player's balance
+- `get_player_balance` - returns the balance for the player specified by an id
 
 ## Implement state storage
 We need to create a `GameManager` instance to store a game state. As the game state should be persisted between calls, `GameManager` should be a global variable. Since Wasm environment is single-threaded, `thread_local!` macro is used here for the global state storage.
@@ -141,7 +142,7 @@ thread_local! {
 
 `RefCell` here is needed to provide interior mutability since `thread_local!` assume that its content is immutable. It's a technical detail.
 
-## Implement requests handling
+## Implementing requests handling
 
 _You can find full working example in the [`lib.rs.full`](backend/src/lib.rs.full) file._
 
