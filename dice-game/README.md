@@ -266,19 +266,19 @@ import * as fluence from "fluence";
 window.fluence = fluence;
 
 // convert result to a string
-window.getResultString = function (result) {
+window.getResultAsString = function (result) {
 	return result.result().then((r) => r.asString())
 };
 
 window.logResultAsString = function(result) {
-	return getResultString(result).then((r) => console.log(r))
+	return getResultAsString(result).then((r) => console.log(r))
 };
 ```
 
 ### JS SDK: invoke(), result()
 Main method in Fluence SDK is `invoke`, it takes a string, and returns an object similar to promise. Object has a method called `result`. Responses are lazy in Fluence, and `result` retrieves the response of a specific `invoke` from the real-time cluster.
 
-So methods `getResultString` and `logResultAsString` are to automate calling `result`, and save some typing. It's not always a good idea to call `result` on every invoke, because result is available only after two Tendermint blocks, so it can take a while. Sometimes a better approach would be to send a batch on `invoke`'s, and then call `result` as you need.
+So methods `getResultAsString` and `logResultAsString` are to automate calling `result`, and save some typing. It's not always a good idea to call `result` on every invoke, because result is available only after two Tendermint blocks, so it can take a while. Sometimes a better approach would be to send a batch on `invoke`'s, and then call `result` as you need.
 
 ### JS SDK: connect()
 
@@ -308,7 +308,7 @@ Let's move from SDK API to the actual game interface implementation!
 // send request to join the game
 function join() {
     let result = session.invoke(`{ "action": "Join" }`);
-    getResultString(result).then(function (str) {
+    getResultAsString(result).then(function (str) {
         let response = JSON.parse(str);
         ...
         updateBalance(100);
@@ -329,7 +329,7 @@ function roll() {
     ...
     let request = betRequest();
     let result = session.invoke(request);
-    getResultString(result).then(str => {
+    getResultAsString(result).then(str => {
         let response = JSON.parse(str);
         ...
         showResult(parseInt(response.outcome), guess);
