@@ -10,12 +10,12 @@ window.info = globalInfo;
 window.fluence = fluence;
 
 // convert result to a string
-window.getResultString = function (result) {
+window.getResultAsString = function (result) {
 	return result.result().then((r) => r.asString())
 };
 
 window.logResultAsString = function(result) {
-	return getResultString(result).then((r) => console.log(r))
+	return getResultAsString(result).then((r) => console.log(r))
 };
 
 window.onload = function () {
@@ -48,7 +48,7 @@ window.onload = function () {
 	// send request to join the game
 	function join() {
 		let result = session.invoke(`{ "action": "Join" }`);
-		getResultString(result).then(function (str) {
+		getResultAsString(result).then(function (str) {
 			let response = JSON.parse(str);
 			if (response.player_id || response.player_id === 0) {
 				statusDiv.innerText = "You joined to game. Your id is: " + response.player_id;
@@ -77,7 +77,7 @@ window.onload = function () {
 			resultDiv.innerHTML = "";
 			let request = betRequest();
 			let result = session.invoke(request);
-			getResultString(result).then(str => {
+			getResultAsString(result).then(str => {
 				let response = JSON.parse(str);
 				if (response.outcome) {
 					showResult(parseInt(response.outcome), guess);
@@ -150,7 +150,7 @@ window.onload = function () {
 	// hackity-hack! we could get balance for any player
 	function getBalance(id) {
 		let result = session.invoke(`{ "player_id": ${id}, "action": "GetBalance"}`);
-		return getResultString(result).then(function (str) {
+		return getResultAsString(result).then(function (str) {
 			let response = JSON.parse(str);
 			if (response.player_balance) {
 				updateBalance(response.player_balance)
