@@ -25,8 +25,9 @@ Backend will be developed in Rust, because of it's tremendous WebAssembly suppor
 
 ## Set up Rust
 
-Install rust compiler and it's tools:
+Install the Rust compiler:
 ```bash
+# installs the Rust compiler and supplementary tools to `~/.cargo/bin`
 ~ $ curl https://sh.rustup.rs -sSf | sh -s -- -y
 info: downloading installer
 ...
@@ -40,8 +41,8 @@ Let's listen to the installer and configure your current shell:
 <no output>
 ```
 
-Then you need to install nightly toolchain, run:
-
+After that, we need to install the nighly Rust toolchain:  
+<small>(Fluence Rust SDK requires the nightly toolchain due to certain memory operations)</small>
 ```bash
 ~ $ rustup toolchain install nightly
 info: syncing channel updates ...
@@ -49,20 +50,33 @@ info: syncing channel updates ...
   nightly-<arch> installed - rustc 1.34.0-nightly (57d7cfc3c 2019-02-11)
 ```
 
-To check nightly toolchain was installed succesfully:
+Let's check that the nightly toolchain was installed successfully:
 ```bash
 ~ $ rustup toolchain list | grep nightly
-# output should contain nighly toolchain
+# the output should contain the nighly toolchain
 ...
 nightly-<arch>
 ```
 
-Also, to be able to compile Rust to WebAssembly, we need to add wasm32 compilation target. Just run the following:
+To compile Rust to WebAssembly, we also need to add the `wasm32` compilation target:
 ```bash
 # install target for WebAssembly
 ~ $ rustup target add wasm32-unknown-unknown --toolchain nightly
 info: downloading component 'rust-std' for 'wasm32-unknown-unknown'
 info: installing component 'rust-std' for 'wasm32-unknown-unknown'
+```
+
+Finally, let's check that everything was set up correctly and compile a sample Rust code:
+```bash
+# create a simple program that always returns 1
+~ $ echo "fn main(){1;}" > test.rs
+
+# compile it to WebAssembly using rustc from the nightly toolchain
+~ $ rustup run nightly rustc --target=wasm32-unknown-unknown test.rs
+<no output>
+# check that the test.wasm output file was created
+~ $ ls -lh test.wasm
+-rwxr-xr-x  1 user  user   1.4M Feb 11 11:59 test.wasm
 ```
 
 Now it's time to create a Rust dice-game project! For that, clone this repository, and open `dice-game/backend` directory:
@@ -156,7 +170,9 @@ So, we have requests parsing and routing implemented! Great, now we need to tell
 fn main(req: String) -> String
 ```
 
-Such a function is called a _gateway function_. It is an entrypoint to your backend, and can take and return a `String` or a `Vec<u8>`, depending on your application needs. `String` seems like a better for for a JSON-based protocol, so we'll go with that. 
+The function marked with the `#[invocation_handler]` macro is called a _gateway function_. It is essentially the entry point to your application: all client transactions will be passed to this function, and once it returns a result, clients can read this result. 
+
+Gateway functions are allowed to take and return only `String` or `Vec<u8>` values, and `String` seems like a better fit for a JSON-based protocol, so we'll go with that. 
 
 `do_request` returns a `Result`, possibly with errors, let's convert it to a `String`:
 
@@ -179,9 +195,8 @@ Finally, we have a `main` function that can receive JSON as a `String`, process 
 
 ## Compiling Rust to WebAssembly
 
-Run the following code to build a `.wasm` file from your Rust code in the project root directory.
-
-NOTE: downloading and compiling dependencies might take a few minutes.
+To build the `.wasm` file, run this from the application directory:  
+<small>(note: downloading and compiling dependencies might take a few minutes)</small>
 
 ```bash
 # in directory dice-game/backend
