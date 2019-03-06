@@ -42,7 +42,7 @@ Let's listen to the installer and configure your current shell:
 ```
 
 After that, we need to install the nighly Rust toolchain:  
-<small>(Fluence Rust SDK requires the nightly toolchain due to certain memory operations)</small>
+**(Fluence Rust SDK requires the nightly toolchain due to certain memory operations)**
 ```bash
 ~ $ rustup toolchain install nightly
 info: syncing channel updates ...
@@ -128,7 +128,7 @@ Most of the game logic is implemented inside [`GameManager`](backend/src/game_ma
 
 We need to create a `GameManager` instance to store a game state. As the game state should be persisted between calls, `GameManager` should be a global variable. Since Wasm environment is single-threaded, `thread_local!` macro is used here for the global state storage.
 
-<small>Paste this snippet to the [`lib.rs`](backend/src/lib.rs):</small>
+**Paste this snippet to the [`lib.rs`](backend/src/lib.rs):**
 ```Rust
 thread_local! {
     static GAME_MANAGER: RefCell<GameManager> = RefCell::new(GameManager::new());
@@ -145,7 +145,7 @@ There are `Request` and `Response` enums in the [`request_response.rs`](backend/
 
 These enums are to be used to parse requests and send back reponses. With the great power of `serde_json` routing can be easily implement via pattern matching.
 
-<small>Paste this snippet to the [`lib.rs`](backend/src/lib.rs):</small>
+**Paste this snippet to the [`lib.rs`](backend/src/lib.rs):**
 ```Rust
 fn do_request(req: String) -> AppResult<Value> {
     let request: Request = serde_json::from_str(req.as_str())?;
@@ -178,7 +178,7 @@ Gateway functions are allowed to take and return only `String` or `Vec<u8>` valu
 
 `do_request` returns a `Result`, possibly with errors, let's convert it to a `String`.
 
-<small>Paste this snippet to the [`lib.rs`](backend/src/lib.rs):</small>
+**Paste this snippet to the [`lib.rs`](backend/src/lib.rs):**
 ```rust
 #[invocation_handler]
 fn main(req: String) -> String {
@@ -199,7 +199,7 @@ Finally, we have a `main` function that can receive JSON as a `String`, process 
 ## Compiling Rust to WebAssembly
 
 To build the `.wasm` file, run this from the application directory:  
-<small>(note: downloading and compiling dependencies might take a few minutes)</small>
+**(note: downloading and compiling dependencies might take a few minutes)**
 
 ```bash
 # in directory dice-game/backend/src
