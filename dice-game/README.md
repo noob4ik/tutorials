@@ -137,11 +137,11 @@ fn do_request(req: String) -> AppResult<Value> {
     match request {
         Request::Join => GAME_MANAGER.with(|gm| gm.borrow_mut().join()),
 
-        Request::Bet {
+        Request::Roll {
             player_id,
-            placement,
-            bet_amount,
-        } => GAME_MANAGER.with(|gm| gm.borrow_mut().bet(player_id, placement, bet_amount)),
+            bet_placement,
+            bet_size,
+        } => GAME_MANAGER.with(|gm| gm.borrow_mut().roll(player_id, bet_placement, bet_size)),
 
         Request::GetBalance { player_id } => {
             GAME_MANAGER.with(|gm| gm.borrow_mut().get_player_balance(player_id))

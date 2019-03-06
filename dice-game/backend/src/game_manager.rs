@@ -62,17 +62,17 @@ impl GameManager {
     }
 
     /// Checks parameters of given bet and processes it.
-    pub fn roll(&mut self, player_id: u64, placement: u8, bet_amount: u32) -> AppResult<Value> {
-        fn check_bet(player_balance: u64, placement: u8, bet_amount: u64) -> AppResult<()> {
-            if bet_amount > player_balance {
+    pub fn roll(&mut self, player_id: u64, bet_placement: u8, bet_size: u32) -> AppResult<Value> {
+        fn check_bet(player_balance: u64, bet_placement: u8, bet_size: u64) -> AppResult<()> {
+            if bet_size > player_balance {
                 return Err(format!(
                     "Player hasn't enough money: player's current balance is {} while the bet is {}",
-                    player_balance, bet_amount
+                    player_balance, bet_size
                 ))
                     .map_err(Into::into);
             }
 
-            if placement > GameManager::DICE_LINE_COUNT {
+            if bet_placement > GameManager::DICE_LINE_COUNT {
                 return Err("Incorrect placement, please choose number from 1 to 6")
                     .map_err(Into::into);
             }
@@ -80,20 +80,20 @@ impl GameManager {
             Ok(())
         }
 
-        fn update_balance(player_balance: u64, bet_amount: u64, placement: u8, outcome: u8) -> u64 {
-            if placement == outcome {
-                player_balance + (bet_amount * PAYOUT_RATE)
+        fn update_balance(player_balance: u64, bet_size: u64, bet_placement: u8, outcome: u8) -> u64 {
+            if bet_placement == outcome {
+                player_balance + (bet_size * PAYOUT_RATE)
             } else {
-                player_balance - bet_amount
+                player_balance - bet_size
             }
         }
 
         let player_balance = self.player_balance(player_id)?;
-        let bet_amount = u64::from(bet_amount);
-        check_bet(player_balance, placement, bet_amount)?;
+        let bet_size = u64::from(bet_size);
+        check_bet(player_balance, bet_placement, bet_size)?;
 
         let outcome = self.rng.gen::<u8>() % GameManager::DICE_LINE_COUNT + 1;
-        let new_player_balance = update_balance(player_balance, bet_amount, placement, outcome);
+        let new_player_balance = update_balance(player_balance, bet_size, bet_placement, outcome);
 
         let response = Response::Roll {
             outcome,

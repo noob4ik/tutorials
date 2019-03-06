@@ -18,7 +18,7 @@ use serde::{Deserialize, Serialize};
 
 /*
   join: {} -> {id}
-  bet: {id, placement, bet_amount} -> {outcome, player_balance}
+  bet: {id, bet_placement, bet_size} -> {outcome, player_balance}
   get_balance: {id} -> {player_balance}
 */
 
@@ -28,8 +28,8 @@ pub enum Request {
     Join,
     Roll {
         player_id: u64,
-        placement: u8,
-        bet_amount: u32,
+        bet_placement: u8,
+        bet_size: u32,
     },
     GetBalance {
         player_id: u64,
