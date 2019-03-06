@@ -123,7 +123,7 @@ Most of the game logic is implemented inside [`GameManager`](backend/src/game_ma
 
 `GameManager` has three public functions: 
 - `join` - creates new player, returns it's `player_id`.
-- `bet` - makes a bet with `player_id`, `guess`, `bet_amount`, returning an outcome and a player's balance.
+- `roll` - makes a bet with `player_id`, `bet_placement`, `bet_size`, returning an outcome and a player's balance.
 - `get_player_balance` - returns the balances for the player specified by `player_id`.
 
 We need to create a `GameManager` instance to store a game state. As the game state should be persisted between calls, `GameManager` should be a global variable. Since Wasm environment is single-threaded, `thread_local!` macro is used here for the global state storage.
@@ -164,7 +164,7 @@ fn do_request(req: String) -> AppResult<Value> {
 }
 ```
 
-So, we have requests parsing and routing implemented! Great, now we need to tell Fluence how to call our code. For that, we need to mark some function with `#[invokation_handler]` macro. Let's call it `main`:
+So, we have requests parsing and routing implemented! Great, now we need to tell Fluence how to call our code. For that, we need to mark some function with `#[invocation_handler]` macro. Let's call it `main`:
 ```rust
 #[invocation_handler]
 fn main(req: String) -> String
