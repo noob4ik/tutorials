@@ -17,7 +17,7 @@ window.onload = function () {
 	let ethUrl = "http://data.fluence.one:8545"
 
 	// application to interact with that stored in Fluence contract
-	let appId = "9";
+	let appId = "15";
 
 	// save fluence to global variable, so it can be accessed from Developer Console
 	window.fluence = fluence;
