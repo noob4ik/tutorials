@@ -223,7 +223,7 @@ Click the `Check cluster` button, and you will see the height of a blockchain fo
 
 <div style="text-align:center">
 <kbd>
-<img src="img/dash_app.png" width="300px"/>
+<img src="img/check_cluster.png" width="300px"/>
 </kbd>
 <br><br><br>
 </div>
