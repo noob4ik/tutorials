@@ -1,17 +1,22 @@
 # Dice game
 - [Set up Rust](#set-up-rust)
-- [Use existing code](#use-existing-code)
+- [Understand existing code](#understand-existing-code)
 - [Implement requests handling](#implement-requests-handling)
 - [Compiling Rust to WebAssembly](#compiling-rust-to-webassembly)
 - [Publishing](#publishing)
+- [Dashboard](#dashboard)
 - [Dice game frontend](#dice-game-frontend)
 - [Reviewing the frontend code](#reviewing-the-frontend-code)
-  - [SDK API](#sdk-api)
-  - [connect()](#connect)
-  - [join()](#join)
-  - [roll()](#roll)
+- [package.json](#packagejson)
+- [index.js](#indexjs)
+  - [JS SDK: invoke(), result()](#js-sdk-invoke-result)
+  - [JS SDK: connect()](#js-sdk-connect)
+  - [Game: join()](#game-join)
+  - [Game: roll()](#game-roll)
 - [Running the app](#running-the-app)
 - [Hacking!](#hacking)
+    - [Frontend](#frontend)
+    - [Backend](#backend)
 
 In this simple dice game, you can bet your points against dice rolled by the backend. 
 
