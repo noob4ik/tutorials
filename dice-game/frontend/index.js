@@ -31,13 +31,13 @@ window.onload = function () {
 	const historyTable = document.getElementById('history');
 	
 	// address to Fluence contract in Ethereum blockchain. Interaction with blockchain created by MetaMask or with local Ethereum node
-	let contractAddress = "0x4c9c53c3005a52d3468bb8a20fcb4c3ea76098ac";
+	let contractAddress = "0x074a79f29c613f4f7035cec582d0f7e4d3cda2e7";
 
 	// set ethUrl to `undefined` to use MetaMask instead of Ethereum node
 	let ethUrl = "http://data.fluence.one:8545/";
 
 	// application to interact with that stored in Fluence contract
-	let appId = "37";
+	let appId = "12";
 
 	// create a session between client and backend application, and then join the game
 	fluence.connect(contractAddress, appId, ethUrl).then((s) => {
