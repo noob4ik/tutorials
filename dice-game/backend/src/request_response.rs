@@ -26,7 +26,7 @@ use serde::{Deserialize, Serialize};
 #[serde(tag = "action")]
 pub enum Request {
     Join,
-    Bet {
+    Roll {
         player_id: u64,
         placement: u8,
         bet_amount: u32,
@@ -40,7 +40,7 @@ pub enum Request {
 #[serde(untagged)]
 pub enum Response {
     Join { player_id: u64 },
-    Bet { outcome: u8, player_balance: u64 },
+    Roll { outcome: u8, player_balance: u64 },
     GetBalance { player_balance: u64 },
     Error { message: String },
 }
