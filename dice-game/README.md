@@ -255,8 +255,8 @@ Having a [Rust backend](#implement-requests-handling) for the Dice game, the nex
 
 Let's open `dice-game/frontend` directory:
 ```bash
-# from dice-game/backend
-$ cd ../frontend
+# from dice-game/backend/src
+$ cd ../../frontend
 ```
 
 There are two files of interest in `dice-game/frontend`:
