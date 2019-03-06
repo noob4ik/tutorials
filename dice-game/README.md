@@ -135,26 +135,25 @@ The `GameManager` has three public functions:
 - `get_player_balance` - returns the balance for the player specified by an id
 
 ### Implementing the state storage
-We need to create a `GameManager` instance to store a game state. As the game state should be persisted between calls, `GameManager` should be a global variable. Since Wasm environment is single-threaded, `thread_local!` macro is used here for the global state storage.
 
-**Paste this snippet to the [`lib.rs`](backend/src/lib.rs):**
+To store the game state, we need to create a `GameManager` instance. Because the game state should be persisted between transactions, the `GameManager` instance should be a global variable. Since the WebAssembly environment is single-threaded, the `thread_local!` macro is used for global variables.
+
+To add the game state, paste this snippet to [`lib.rs`](backend/src/lib.rs):
 ```Rust
 thread_local! {
     static GAME_MANAGER: RefCell<GameManager> = RefCell::new(GameManager::new());
 }
 ```
 
-`RefCell` here is needed to provide interior mutability since `thread_local!` assume that its content is immutable. It's a technical detail.
+`RefCell` here is needed to provide interior mutability since the `thread_local!` macro assumes that its content is immutable. Do not worry about this for now :)
 
 ### Implementing the request handling
 
-_You can find full working example in the [`lib.rs.full`](backend/src/lib.rs.full) file._
+_Note: you can find the full working example in the [`lib.rs.full`](backend/src/lib.rs.full) file._
 
-There are `Request` and `Response` enums in the [`request_response.rs`](backend/src/request_response.rs) that could be serialized and deserialized by JSON framework named `serde`. 
+In [`request_response.rs`](backend/src/request_response.rs) you can find `Request` and `Response` enums. These enums can be serialized and deserialized by the `serde` serialization framework, and can then be used to parse requests and send back reponses. With the great power of `serde_json`, the routing can be easily implemented using pattern matching.
 
-These enums are to be used to parse requests and send back reponses. With the great power of `serde_json` routing can be easily implement via pattern matching.
-
-**Paste this snippet to the [`lib.rs`](backend/src/lib.rs):**
+To add request handling, paste this snippet to [`lib.rs`](backend/src/lib.rs):
 ```Rust
 fn do_request(req: String) -> AppResult<Value> {
     let request: Request = serde_json::from_str(req.as_str())?;
@@ -175,7 +174,8 @@ fn do_request(req: String) -> AppResult<Value> {
 }
 ```
 
-So, we have requests parsing and routing implemented! Great, now we need to tell Fluence how to call our code. For that, we need to mark some function with `#[invocation_handler]` macro. Let's call it `main`:
+Now we have request parsing and routing implemented! Great, now we need to tell Fluence how to call our code. For that, we need to mark some function with the `#[invocation_handler]` macro, for example:
+
 ```rust
 #[invocation_handler]
 fn main(req: String) -> String
@@ -183,11 +183,11 @@ fn main(req: String) -> String
 
 The function marked with the `#[invocation_handler]` macro is called a _gateway function_. It is essentially the entry point to your application: all client transactions will be passed to this function, and once it returns a result, clients can read this result. 
 
-Gateway functions are allowed to take and return only `String` or `Vec<u8>` values, and `String` seems like a better fit for a JSON-based protocol, so we'll go with that. 
+Gateway functions are allowed to take and return only `String` or `Vec<u8>` values, and `String` seems like a better fit for a JSON-based protocol, so we will go with that. 
 
-`do_request` returns a `Result`, possibly with errors, let's convert it to a `String`.
+Note that `do_request` method returns `Result`, so let's convert it to `String`.  
+Paste this snippet to the [`lib.rs`](backend/src/lib.rs):
 
-**Paste this snippet to the [`lib.rs`](backend/src/lib.rs):**
 ```rust
 #[invocation_handler]
 fn main(req: String) -> String {
@@ -203,12 +203,12 @@ fn main(req: String) -> String {
 }
 ```
 
-Finally, we have a `main` function that can receive JSON as a `String`, process it by `do_request`, and return a JSON string.
+Now we've got the `main` function that takes a JSON input, processes it with `do_request`, and returns a JSON output.
 
 ### Compiling Rust to WebAssembly
 
 To build the `.wasm` file, run this from the application directory:  
-**(note: downloading and compiling dependencies might take a few minutes)**
+<sup>(note: downloading and compiling dependencies might take a few minutes)</sup>
 
 ```bash
 # in directory dice-game/backend/src
@@ -226,9 +226,11 @@ $ ls -lh ../target/wasm32-unknown-unknown/release/dice_game.wasm
 ```
 
 ## Publishing the backend app
+
 Let's refer to the [Fluence Book](https://fluence.network/docs/book/quickstart/publish.html) to guide us through the publishing process.
 
 ## Dashboard
+
 After a successful publishing, you now have a deployed backend app with assigned `appId`. To check that's your application is created a healhy cluster, open [dash.fluence.network](http://dash.fluence.network). You will see
 
 <div style="text-align:center">
