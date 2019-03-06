@@ -126,6 +126,7 @@ Most of the game logic is implemented inside [`GameManager`](backend/src/game_ma
 - `roll` - makes a bet with `player_id`, `bet_placement`, `bet_size`, returning an outcome and a player's balance.
 - `get_player_balance` - returns the balances for the player specified by `player_id`.
 
+## Implement state storage
 We need to create a `GameManager` instance to store a game state. As the game state should be persisted between calls, `GameManager` should be a global variable. Since Wasm environment is single-threaded, `thread_local!` macro is used here for the global state storage.
 
 **Paste this snippet to the [`lib.rs`](backend/src/lib.rs):**
