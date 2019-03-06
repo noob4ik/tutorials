@@ -128,6 +128,7 @@ Most of the game logic is implemented inside [`GameManager`](backend/src/game_ma
 
 We need to create a `GameManager` instance to store a game state. As the game state should be persisted between calls, `GameManager` should be a global variable. Since Wasm environment is single-threaded, `thread_local!` macro is used here for the global state storage.
 
+<small>Paste this snippet to the [`lib.rs`](backend/src/lib.rs):</small>
 ```Rust
 thread_local! {
     static GAME_MANAGER: RefCell<GameManager> = RefCell::new(GameManager::new());
@@ -142,8 +143,9 @@ _You can find full working example in the [`lib.rs.full`](backend/src/lib.rs.ful
 
 There are `Request` and `Response` enums in the [`request_response.rs`](backend/src/request_response.rs) that could be serialized and deserialized by JSON framework named `serde`. 
 
-These enums are to be used to parse requests and send back reponses. With the great power of `serde_json` routing can be easily implement via pattern matching:
+These enums are to be used to parse requests and send back reponses. With the great power of `serde_json` routing can be easily implement via pattern matching.
 
+<small>Paste this snippet to the [`lib.rs`](backend/src/lib.rs):</small>
 ```Rust
 fn do_request(req: String) -> AppResult<Value> {
     let request: Request = serde_json::from_str(req.as_str())?;
@@ -174,8 +176,9 @@ The function marked with the `#[invocation_handler]` macro is called a _gateway 
 
 Gateway functions are allowed to take and return only `String` or `Vec<u8>` values, and `String` seems like a better fit for a JSON-based protocol, so we'll go with that. 
 
-`do_request` returns a `Result`, possibly with errors, let's convert it to a `String`:
+`do_request` returns a `Result`, possibly with errors, let's convert it to a `String`.
 
+<small>Paste this snippet to the [`lib.rs`](backend/src/lib.rs):</small>
 ```rust
 #[invocation_handler]
 fn main(req: String) -> String {
