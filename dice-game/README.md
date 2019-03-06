@@ -6,7 +6,7 @@
   - [Implementing the request handling](#implementing-the-request-handling)
   - [Compiling Rust to WebAssembly](#compiling-rust-to-webassembly)
 - [Publishing the backend app](#publishing-the-backend-app)
-- [Dashboard](#dashboard)
+- [Verifying the application status](#verifying-the-application-status)
 - [Dice game frontend](#dice-game-frontend)
   - [package.json](#packagejson)
   - [index.js](#indexjs)
@@ -229,9 +229,11 @@ $ ls -lh ../target/wasm32-unknown-unknown/release/dice_game.wasm
 
 Let's refer to the [Fluence Book](https://fluence.network/docs/book/quickstart/publish.html) to guide us through the publishing process.
 
-## Dashboard
+## Verifying the application status
 
-After a successful publishing, you now have a deployed backend app with assigned `appId`. To check that's your application is created a healhy cluster, open [dash.fluence.network](http://dash.fluence.network). You will see
+Now you should have a deployed backend application with the assigned `appId`. To check that your application was launched on a healthy real-time cluster, check out the [Fluence Network Dashboard](http://dash.fluence.network). 
+
+You should see something like this:
 
 <div style="text-align:center">
 <kbd>
@@ -240,7 +242,7 @@ After a successful publishing, you now have a deployed backend app with assigned
 <br><br><br>
 </div>
 
-Click `Apps`, find an App with your `appId` in the list, and click it.
+Click `Apps` and then find and click on the application with your `appId`:
 
 <div style="text-align:center">
 <kbd>
@@ -249,7 +251,7 @@ Click `Apps`, find an App with your `appId` in the list, and click it.
 <br><br><br>
 </div>
 
-Click the `Check cluster` button, and you will see the height of a blockchain for every member of the cluster. If everything is fine, the height should be bigger that `1`, equal between cluster members, and marked green.
+Click the `Check cluster` button, and you should see the blockchain height for each real-time node in the cluster. The height should increase every time when you send a request to the backend application. If everything is fine, the height should be bigger than `1`, equal between the nodes, and marked green:
 
 <div style="text-align:center">
 <kbd>
@@ -258,9 +260,7 @@ Click the `Check cluster` button, and you will see the height of a blockchain fo
 <br><br><br>
 </div>
 
-The height will increase when you send a request to the backend app. 
-
-If everything is OK, let's move to the frontend!
+If the backend application was deployed correctly, let's move to the frontend!
 
 ## Dice game frontend
 _For this part, you will need installed `npm`. Please refer to [npm docs](https://www.npmjs.com/get-npm) for installation instructions._
