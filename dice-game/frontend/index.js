@@ -31,13 +31,13 @@ window.onload = function () {
 	const historyTable = document.getElementById('history');
 	
 	// address to Fluence contract in Ethereum blockchain. Interaction with blockchain created by MetaMask or with local Ethereum node
-	let contractAddress = "0x074a79f29c613f4f7035cec582d0f7e4d3cda2e7";
+	let contractAddress = "0x4c9c53c3005a52d3468bb8a20fcb4c3ea76098ac";
 
 	// set ethUrl to `undefined` to use MetaMask instead of Ethereum node
 	let ethUrl = "http://data.fluence.one:8545/";
 
 	// application to interact with that stored in Fluence contract
-	let appId = "10";
+	let appId = "37";
 
 	// create a session between client and backend application, and then join the game
 	fluence.connect(contractAddress, appId, ethUrl).then((s) => {
@@ -76,7 +76,7 @@ window.onload = function () {
 		if (checkInput()) {
 			resultDiv.innerHTML = "";
 			let request = rollRequest();
-			let result = session.invoke(request);
+			let result = session.invoke(JSON.stringify(request));
 			getResultAsString(result).then(str => {
 				let response = JSON.parse(str);
 				if (response.outcome) {
@@ -94,14 +94,12 @@ window.onload = function () {
 		let betSize = parseInt(betSizeInput.value.trim());
 		let betPlacement = parseInt(betPlacementInput.value.trim());
 
-		let request = {
-			player_id: globalInfo.player_id,
-			action: "Roll",
-			bet_placement: betPlacement,
-			bet_size: parseInt(betSize)
-		};
-		
-		return JSON.stringify(request);
+        return {
+            player_id: globalInfo.player_id,
+            action: "Roll",
+            bet_placement: betPlacement,
+            bet_size: parseInt(betSize)
+        };
 	}
 
 	// check inputs are valid, and report if they're not
@@ -117,21 +115,21 @@ window.onload = function () {
 
 	// display results in UI
 	function showResult(outcome, betPlacement) {
-		let resultStr = `<h2>Outcome is ${outcome}.   `;
+		let resultStr = `<h4>Outcome is ${outcome}.   `;
 		if (outcome !== betPlacement) {
 			globalInfo.losses_number = globalInfo.losses_number + 1;
 			let time = globalInfo.losses_number === 1 ? "time" : "times in a row";
-			resultDiv.innerHTML =  `${resultStr}<b style='color:red'>You've lost ${globalInfo.losses_number} ${time}!</b></h2>`
+			resultDiv.innerHTML =  `${resultStr}<b style='color:red'>You've lost ${globalInfo.losses_number} ${time}!</b></h4>`
 		} else {
 			globalInfo.losses_number = 0;
-			resultDiv.innerHTML = resultStr + "<b style='color:green'>You won!</b></h2>"
+			resultDiv.innerHTML = resultStr + "<b style='color:green'>You won!</b></h4>"
 		}
 	}
 
 	// prepend game results to the game history table
 	function updateHistoryTable(request, response) {
 		updateBalance(response.player_balance);
-		history.unshift(`<tr><td>${request.bet_size}</td><td>${request.bet_placement}</td><td>${response.outcome}</td><td>${response.player_balance}</td></tr>`);
+		history.unshift(`<tr><td class="align-middle">${request.bet_size}</td><td>${request.bet_placement}</td><td>${response.outcome}</td><td>${response.player_balance}</td></tr>`);
 		historyTable.innerHTML = history.join("");
 	}
 
@@ -143,8 +141,8 @@ window.onload = function () {
 
 	// show error to the user
 	function showError(error) {
-		console.error(error)
-		// TODO: show error visually
+		console.error(error);
+		resultDiv.innerHTML = `<h4>${error}</h4>`
 	}
 
 	// hackity-hack! we could get balance for any player
