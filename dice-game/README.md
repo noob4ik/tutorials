@@ -1,5 +1,5 @@
 # Dice game
-- [Set up Rust](#set-up-rust)
+- [Setting up Rust](#setting-up-rust)
 - [Understand existing code](#understand-existing-code)
 - [Implement requests handling](#implement-requests-handling)
 - [Compiling Rust to WebAssembly](#compiling-rust-to-webassembly)
@@ -17,15 +17,16 @@
     - [Frontend](#frontend)
     - [Backend](#backend)
 
-In this simple dice game, you can bet your points against dice rolled by the backend. 
+In this simple dice game, you can bet your points against the dice rolled by the backend. The backend handles dice throws, user registrations and user balances, and the frontend provides the end-user interface to play the game.
 
-Backend handles user registration, balances and dice generation, and frontend gives the end-user an interface to play the game.
+In this tutorial we will use Rust as a language of choice for the backend because of its tremendous WebAssembly support. For the frontend we will use JavaScript with some TypeScript under the hood 😉
 
-Backend will be developed in Rust, because of it's tremendous WebAssembly support. And for the frontend, JavaScript and some HTML will do. (With some TypeScript under the hood 😉)
+## Setting up Rust
 
-## Set up Rust
+Let's get some Rust!
 
 Install the Rust compiler:
+
 ```bash
 # installs the Rust compiler and supplementary tools to `~/.cargo/bin`
 ~ $ curl https://sh.rustup.rs -sSf | sh -s -- -y
