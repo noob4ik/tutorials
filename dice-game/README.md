@@ -426,6 +426,18 @@ Let's make a bet!
 <br><br><br>
 </div>
 
+## Delete your backend
+After you've done with your backend, you can delete it!
+
+You should already have a CLI available in your terminal, so let's use it:
+```bash
+# go to the directory containing the `fluence` binary
+./fluence app_delete --wait --deployed --app_id <your app id>
+
+```
+
+Note the `--deployed` option. It means that app is deployed and the cluster hosting it should be deleted as well. Without that flag, app would be removed only if there is no assigned cluster (i.e., app is not yet deployed).
+
 ## Hacking!
 Ideas to implement:
 #### Frontend
