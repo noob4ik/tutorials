@@ -44,8 +44,8 @@ Let's listen to the installer and configure your current shell:
 <no output>
 ```
 
-After that, we need to install the nighly Rust toolchain:  
-**(Fluence Rust SDK requires the nightly toolchain due to certain memory operations)**
+After that, we need to install the nightly Rust toolchain:  
+<sup>(Fluence Rust SDK requires the nightly toolchain due to certain memory operations)</sup>
 ```bash
 ~ $ rustup toolchain install nightly
 info: syncing channel updates ...
@@ -56,7 +56,7 @@ info: syncing channel updates ...
 Let's check that the nightly toolchain was installed successfully:
 ```bash
 ~ $ rustup toolchain list | grep nightly
-# the output should contain the nighly toolchain
+# the output should contain the nightly toolchain
 ...
 nightly-<arch>
 ```
