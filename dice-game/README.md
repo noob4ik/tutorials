@@ -427,13 +427,17 @@ Let's make a bet!
 <br><br><br>
 </div>
 
+
+You can press `Ctrl-C` now to kill the web server.
+
 ## Delete your backend
 After you've done with your backend, you can delete it!
 
 You should already have a CLI available in your terminal, so let's use it:
 ```bash
-# go to the directory containing the `fluence` binary
-./fluence app_delete --wait --deployed --app_id <your app id>
+# in directory dice-game/frontend
+$ cd ../backend/src
+$ ./fluence delete_app --wait --deployed --app_id <your app id>
 
 ```
 
