@@ -25,8 +25,8 @@ window.onload = function () {
 	const gameDiv = document.getElementById('game');
 	const resultDiv = document.getElementById('result');
 	const balanceDiv = document.getElementById('balance');
-	const betInput = document.getElementById('bet');
-	const guessInput = document.getElementById('guess');
+	const betSizeInput = document.getElementById('bet-size');
+	const betPlacementInput = document.getElementById('bet-placement');
 	const rollButton = document.getElementById('roll');
 	const historyTable = document.getElementById('history');
 	
@@ -65,7 +65,7 @@ window.onload = function () {
 	function startGame(id) {
 		globalInfo.player_id = id;
 		gameDiv.hidden = false;
-		betInput.focus();
+		betSizeInput.focus();
 	}
 
 	// call roll() on button click
@@ -80,8 +80,8 @@ window.onload = function () {
 			getResultAsString(result).then(str => {
 				let response = JSON.parse(str);
 				if (response.outcome) {
-					showResult(parseInt(response.outcome), guess);
-					updateHistoryTable(bet, response);
+					showResult(parseInt(response.outcome), request.bet_placement);
+					updateHistoryTable(request, response);
 				} else {
 					showError("Unable to roll: " + str);
 				}
@@ -91,14 +91,14 @@ window.onload = function () {
 
 	// build a bet JSON request from inputs
 	function rollRequest() {
-		let bet = parseInt(betInput.value.trim());
-		let guess = parseInt(guessInput.value.trim());
+		let betSize = parseInt(betSizeInput.value.trim());
+		let betPlacement = parseInt(betPlacementInput.value.trim());
 
 		let request = {
 			player_id: globalInfo.player_id,
 			action: "Roll",
-			placement: guess,
-			bet_amount: parseInt(bet)
+			bet_placement: betPlacement,
+			bet_size: parseInt(betSize)
 		};
 		
 		return JSON.stringify(request);
@@ -106,9 +106,9 @@ window.onload = function () {
 
 	// check inputs are valid, and report if they're not
 	function checkInput() {
-		if (!(betInput.checkValidity() && guessInput.checkValidity())) {
-			betInput.reportValidity();
-			guessInput.reportValidity();
+		if (!(betSizeInput.checkValidity() && betPlacementInput.checkValidity())) {
+			betSizeInput.reportValidity();
+			betPlacementInput.reportValidity();
 			return false;
 		}
 
@@ -116,9 +116,9 @@ window.onload = function () {
 	}
 
 	// display results in UI
-	function showResult(fact, guess) {
-		let resultStr = `<h2>Outcome is ${fact}.   `;
-		if (fact !== guess) {
+	function showResult(outcome, betPlacement) {
+		let resultStr = `<h2>Outcome is ${outcome}.   `;
+		if (outcome !== betPlacement) {
 			globalInfo.losses_number = globalInfo.losses_number + 1;
 			let time = globalInfo.losses_number === 1 ? "time" : "times in a row";
 			resultDiv.innerHTML =  `${resultStr}<b style='color:red'>You've lost ${globalInfo.losses_number} ${time}!</b></h2>`
@@ -129,9 +129,9 @@ window.onload = function () {
 	}
 
 	// prepend game results to the game history table
-	function updateHistoryTable(bet, response) {
+	function updateHistoryTable(request, response) {
 		updateBalance(response.player_balance);
-		history.unshift(`<tr><td>${bet}</td><td>${response.outcome}</td><td>${response.player_balance}</td></tr>`);
+		history.unshift(`<tr><td>${request.bet_size}</td><td>${request.bet_placement}</td><td>${response.outcome}</td><td>${response.player_balance}</td></tr>`);
 		historyTable.innerHTML = history.join("");
 	}
 

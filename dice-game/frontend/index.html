@@ -16,12 +16,12 @@
                             <div class="col-sm-4" id="balance"></div>
                         </div>
                         <div class="form-group row">
-                            <label for="bet" class="col-sm-4 col-form-label">Enter your bet:</label>
-                            <input type="number" id="bet" class="col-sm-4 form-control" required>
+                            <label for="bet-size" class="col-sm-4 col-form-label">Enter your bet:</label>
+                            <input type="number" id="bet-size" class="col-sm-4 form-control" required>
                         </div>
                         <div class="form-group row">
-                            <label for="guess" class="col-sm-4 col-form-label">Guess a dice number:</label>
-                            <input type="number" id="guess" class="col-sm-4 form-control" required min="1" max="6">
+                            <label for="bet-placement" class="col-sm-4 col-form-label">Guess a dice number:</label>
+                            <input type="number" id="bet-placement" class="col-sm-4 form-control" required min="1" max="6">
                         </div>
                         <button id="roll" class="btn btn-primary" type="button">Roll</button><br/>
                     </form>
@@ -31,8 +31,9 @@
                     <table class="table">
                         <thead>
                         <tr>
-                            <th scope="col">Bet</th>
-                            <th scope="col">Dice</th>
+                            <th scope="col">Bet Size</th>
+                            <th scope="col">Bet Placement</th>
+                            <th scope="col">Outcome</th>
                             <th scope="col">Balance</th>
                         </tr>
                         </thead>
