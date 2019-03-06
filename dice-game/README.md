@@ -37,7 +37,7 @@ To configure your current shell run source $HOME/.cargo/env
 ```
 
 Let's listen to the installer and configure your current shell:  
-<sub><sup>(new shell environments should pick up the right configuration automatically)</sup><sub>
+<sup>(new shell environments should pick up the right configuration automatically)</sup>
 
 ```bash
 ~ $ source $HOME/.cargo/env
