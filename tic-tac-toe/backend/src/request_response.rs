@@ -50,12 +50,12 @@ pub enum Response {
         winner: String,
         coords: (usize, usize),
     },
-    GetGameState {
+    GameState {
         board: Vec<char>,
         player_tile: char,
         winner: String,
     },
-    GetStatistics {
+    Statistics {
         players_created: u64,
         games_created: u64,
         moves_count: u64,

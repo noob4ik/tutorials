@@ -2,7 +2,7 @@
 # It is not intended for manual editing.
 [[package]]
 name = "arraydeque"
-version = "0.4.3"
+version = "0.4.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
@@ -289,7 +289,7 @@ dependencies = [
 name = "tic-tac-toe"
 version = "0.1.0"
 dependencies = [
- "arraydeque 0.4.3 (registry+https://github.com/rust-lang/crates.io-index)",
+ "arraydeque 0.4.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "boolinator 2.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "fluence 0.0.12 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -335,7 +335,7 @@ version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [metadata]
-"checksum arraydeque 0.4.3 (registry+https://github.com/rust-lang/crates.io-index)" = "e300327073b806ffc81fccb228b2d4131ac7ef1b1a015f7b0c399c7f886cacc6"
+"checksum arraydeque 0.4.4 (registry+https://github.com/rust-lang/crates.io-index)" = "dd48aa0e94f8a4a9d4a2a2a1d796c48caf46704a199941c0bf78502ea379f580"
 "checksum autocfg 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)" = "a6d640bee2da49f60a4068a7fae53acde8982514ab7bae8b8cea9e88cbcfd799"
 "checksum bitflags 1.0.4 (registry+https://github.com/rust-lang/crates.io-index)" = "228047a76f468627ca71776ecdebd732a3423081fcf5125585bcd7c49886ce12"
 "checksum boolinator 2.4.0 (registry+https://github.com/rust-lang/crates.io-index)" = "cfa8873f51c92e232f9bac4065cddef41b714152812bfc5f7672ba16d6ef8cd9"

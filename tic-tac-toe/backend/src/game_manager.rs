@@ -66,24 +66,25 @@ impl GameManager {
         let game_move = GameMove::new(coords.0, coords.1)
             .ok_or_else(|| format!("Invalid coordinates: x = {} y = {}", coords.0, coords.1))?;
 
-        let response = match game.player_move(game_move)? {
-            Some(app_move) => {
-                // checks did the app win in this turn?
-                let winner = match game.get_winner() {
-                    Some(winner) => winner.to_string(),
-                    None => "None".to_owned(),
-                };
-                Response::PlayerMove {
-                    winner,
-                    coords: (app_move.x, app_move.y),
+        let response =
+            match game.player_move(game_move, self.game_statistics.borrow().games_created)? {
+                Some(app_move) => {
+                    // checks did the app win in this turn?
+                    let winner = match game.get_winner() {
+                        Some(winner) => winner.to_string(),
+                        None => "None".to_owned(),
+                    };
+                    Response::PlayerMove {
+                        winner,
+                        coords: (app_move.x, app_move.y),
+                    }
                 }
-            }
-            // none means a win of the player or a draw
-            None => Response::PlayerMove {
-                winner: game.get_winner().unwrap().to_string(),
-                coords: (std::usize::MAX, std::usize::MAX),
-            },
-        };
+                // none means a win of the player or a draw
+                None => Response::PlayerMove {
+                    winner: game.get_winner().unwrap().to_string(),
+                    coords: (std::usize::MAX, std::usize::MAX),
+                },
+            };
 
         self.game_statistics.borrow_mut().moves_count.add_assign(1);
 
@@ -129,7 +130,7 @@ impl GameManager {
 
     pub fn serialize_game_state(&self, game: &Rc<RefCell<Game>>) -> AppResult<Value> {
         let (chosen_tile, board) = game.borrow().get_state();
-        let response = Response::GetGameState {
+        let response = Response::GameState {
             board,
             player_tile: chosen_tile.to_char(),
             winner: match game.borrow().get_winner() {
@@ -148,7 +149,7 @@ impl GameManager {
 
     /// Returns statistics of application usage.
     pub fn get_statistics(&self) -> AppResult<Value> {
-        let response = Response::GetStatistics {
+        let response = Response::Statistics {
             players_created: self.game_statistics.borrow().players_created,
             games_created: self.game_statistics.borrow().games_created,
             moves_count: self.game_statistics.borrow().moves_count,
@@ -167,7 +168,8 @@ impl GameManager {
         player.borrow_mut().game = Rc::downgrade(&game);
 
         if player_tile == Tile::O {
-            game.borrow_mut().app_move(self.game_statistics.borrow().games_created);
+            game.borrow_mut()
+                .app_move(self.game_statistics.borrow().games_created);
         }
         let response = self.serialize_game_state(&game);
 

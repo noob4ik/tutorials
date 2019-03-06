@@ -106,24 +106,24 @@ impl Game {
     /// Returns Some(Winner) if there is some and None otherwise.
     pub fn get_winner(&self) -> Option<Winner> {
         fn same_row(game: &Game) -> Option<Winner> {
-            for col in 0..2 {
+            for col in 0..3 {
                 if game.board[0][col].is_some()
                     && (game.board[0][col] == game.board[1][col])
                     && (game.board[1][col] == game.board[2][col])
                 {
-                    return game.board[0][col].map(|tile| tile.into());
+                    return Some(game.board[0][col].unwrap().into());
                 }
             }
             None
         }
 
         fn same_col(game: &Game) -> Option<Winner> {
-            for row in 0..2 {
+            for row in 0..3 {
                 if game.board[row][0].is_some()
                     && (game.board[row][0] == game.board[row][1])
                     && (game.board[row][1] == game.board[row][2])
                 {
-                    return game.board[row][0].map(|tile| tile.into());
+                    return Some(game.board[row][0].unwrap().into());
                 }
             }
             None
@@ -131,18 +131,24 @@ impl Game {
 
         // checks the left-right diagonal
         fn same_main_diag(game: &Game) -> Option<Winner> {
-            (game.board[0][0].is_some()
+            if game.board[0][0].is_some()
                 && (game.board[0][0] == game.board[1][1])
-                && (game.board[1][1] == game.board[2][2]))
-                .and_option(game.board[0][0].map(|tile| tile.into()))
+                && (game.board[1][1] == game.board[2][2])
+            {
+                return Some(game.board[0][0].unwrap().into());
+            }
+            None
         }
 
         // checks the right-left diagonal
         fn same_anti_diag(game: &Game) -> Option<Winner> {
-            (game.board[0][2].is_some()
+            if game.board[0][2].is_some()
                 && (game.board[0][2] == game.board[1][1])
-                && (game.board[1][1] == game.board[2][0]))
-                .and_option(game.board[0][2].map(|tile| tile.into()))
+                && (game.board[1][1] == game.board[2][0])
+            {
+                return Some(game.board[0][2].unwrap().into())
+            }
+            None
         }
 
         // checks that all tiles are empty (a draw condition)
@@ -162,7 +168,11 @@ impl Game {
 
     /// Makes player and application moves successively. Returns Some() of with coords of app move
     /// if it was successfull and None otherwise. None result means a draw or win of the player.
-    pub fn player_move(&mut self, game_move: GameMove) -> Result<Option<GameMove>, String> {
+    pub fn player_move(
+        &mut self,
+        game_move: GameMove,
+        entropy: u64,
+    ) -> Result<Option<GameMove>, String> {
         if let Some(player) = self.get_winner() {
             return Err(format!("Player {} has already won this game", player));
         }
@@ -173,7 +183,7 @@ impl Game {
 
         self.board[game_move.x][game_move.y].replace(self.player_tile);
 
-        Ok(self.app_move((game_move.x + game_move.y) as u64))
+        Ok(self.app_move((game_move.x + game_move.y) as u64 + entropy))
     }
 
     /// Returns current game state as a tuple with players tile and board.
@@ -213,6 +223,7 @@ impl Game {
         }
 
         self.rng = IsaacRng::seed_from_u64(empty_tiles.len() as u64 + entropy);
+
         let app_move = self.rng.gen_range(0, empty_tiles.len());
         let app_move = empty_tiles[app_move];
         self.board[app_move.0][app_move.1] = Some(self.player_tile.other());
