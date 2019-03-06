@@ -390,7 +390,7 @@ function updateBalance(balance) { ... }
 After putting it all together, let's run it:
 
 ```bash
-$ cd dice-game/frontend
+# in directory dice-game/frontend
 frontend $ npm install
 frontend $ npm run start
 > frontend-template@1.0.0 start /private/tmp/frontend-template
