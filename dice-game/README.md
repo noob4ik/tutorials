@@ -7,7 +7,7 @@
   - [Compiling Rust to WebAssembly](#compiling-rust-to-webassembly)
 - [Publishing the backend app](#publishing-the-backend-app)
 - [Verifying the application status](#verifying-the-application-status)
-- [Dice game frontend](#dice-game-frontend)
+- [Developing the web app](#developing-the-web-app)
   - [package.json](#packagejson)
   - [index.js](#indexjs)
     - [JS SDK: invoke(), result()](#js-sdk-invoke-result)
@@ -262,7 +262,7 @@ Click the `Check cluster` button, and you should see the blockchain height for e
 
 If the backend application was deployed correctly, let's move to the frontend!
 
-## Dice game frontend
+## Developing the web app
 _For this part, you will need installed `npm`. Please refer to [npm docs](https://www.npmjs.com/get-npm) for installation instructions._
 
 Having a [Rust backend](#implement-requests-handling) for the Dice game, the next logical step is to provide potential users with a web interface for the game. 
