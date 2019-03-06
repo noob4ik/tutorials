@@ -15,9 +15,7 @@
     - [Game: join()](#game-join)
     - [Game: roll()](#game-roll)
   - [Running the app](#running-the-app)
-- [Hacking!](#hacking)
-    - [Frontend](#frontend)
-    - [Backend](#backend)
+- [Hacking around](#hacking-around)
 
 In this simple dice game, you can bet your points against the dice rolled by the backend. The backend handles dice throws, user registrations and user balances, and the frontend provides the end-user interface to play the game.
 
@@ -457,17 +455,10 @@ $ ./fluence delete_app --wait --deployed --app_id <your app id>
 
 Note the `--deployed` option. It means that app is deployed and the cluster hosting it should be deleted as well. Without that flag, app would be removed only if there is no assigned cluster (i.e., app is not yet deployed).
 
-## Hacking!
+## Hacking around
+
 Ideas to implement:
-#### Frontend
-- Add leaders board
 
-You can use `GetBalance` method:
-```js
-{ "player_id": ${id}, "action": "GetBalance"}
-```
-- Ability to resume game after a page reload
-
-#### Backend
-- Add names support (instead of ids or whatnot)
-- Add game history support
+- Add the leaderboard (tip: use the `GetBalance` method)
+- Add the ability to resume the game after page reload
+- Add names support (instead of player ids)
