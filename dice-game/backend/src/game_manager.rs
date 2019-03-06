@@ -62,7 +62,7 @@ impl GameManager {
     }
 
     /// Checks parameters of given bet and processes it.
-    pub fn bet(&mut self, player_id: u64, placement: u8, bet_amount: u32) -> AppResult<Value> {
+    pub fn roll(&mut self, player_id: u64, placement: u8, bet_amount: u32) -> AppResult<Value> {
         fn check_bet(player_balance: u64, placement: u8, bet_amount: u64) -> AppResult<()> {
             if bet_amount > player_balance {
                 return Err(format!(
@@ -95,7 +95,7 @@ impl GameManager {
         let outcome = self.rng.gen::<u8>() % GameManager::DICE_LINE_COUNT + 1;
         let new_player_balance = update_balance(player_balance, placement, outcome);
 
-        let response = Response::Bet {
+        let response = Response::Roll {
             outcome,
             player_balance: new_player_balance,
         };
