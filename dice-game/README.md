@@ -1,9 +1,11 @@
 # Dice game
-- [Setting up Rust](#setting-up-rust)
-- [Understanding the existing code](#understanding-the-existing-code)
-- [Implementing requests handling](#implementing-requests-handling)
-- [Compiling Rust to WebAssembly](#compiling-rust-to-webassembly)
-- [Publishing](#publishing)
+- [Developing the backend app](#developing-the-backend-app)
+  - [Setting up Rust](#setting-up-rust)
+  - [Understanding the existing code](#understanding-the-existing-code)
+  - [Implementing the state storage](#implementing-the-state-storage)
+  - [Implementing the request handling](#implementing-the-request-handling)
+  - [Compiling Rust to WebAssembly](#compiling-rust-to-webassembly)
+- [Publishing the backend app](#publishing-the-backend-app)
 - [Dashboard](#dashboard)
 - [Dice game frontend](#dice-game-frontend)
   - [package.json](#packagejson)
@@ -21,7 +23,9 @@ In this simple dice game, you can bet your points against the dice rolled by the
 
 In this tutorial we will use Rust as a language of choice for the backend because of its tremendous WebAssembly support. For the frontend we will use JavaScript with some TypeScript under the hood 😉
 
-## Setting up Rust
+## Developing the backend app
+
+### Setting up Rust
 
 Let's get some Rust!
 
@@ -89,7 +93,7 @@ $ git clone https://github.com/fluencelabs/tutorials
 $ cd tutorials/dice-game/backend/src
 ```
 
-## Understanding the existing code
+### Understanding the existing code
 
 Most of the game logic is already implemented in the [`GameManager`](backend/src/game_manager.rs), so for now your task is to handle user interactions: route client requests, handle errors, and bring the game to life!  
 
@@ -130,7 +134,7 @@ The `GameManager` has three public functions:
 - `roll` - makes a bet, returns the outcome and the new player's balance
 - `get_player_balance` - returns the balance for the player specified by an id
 
-## Implement state storage
+### Implementing the state storage
 We need to create a `GameManager` instance to store a game state. As the game state should be persisted between calls, `GameManager` should be a global variable. Since Wasm environment is single-threaded, `thread_local!` macro is used here for the global state storage.
 
 **Paste this snippet to the [`lib.rs`](backend/src/lib.rs):**
@@ -142,7 +146,7 @@ thread_local! {
 
 `RefCell` here is needed to provide interior mutability since `thread_local!` assume that its content is immutable. It's a technical detail.
 
-## Implementing requests handling
+### Implementing the request handling
 
 _You can find full working example in the [`lib.rs.full`](backend/src/lib.rs.full) file._
 
@@ -201,7 +205,7 @@ fn main(req: String) -> String {
 
 Finally, we have a `main` function that can receive JSON as a `String`, process it by `do_request`, and return a JSON string.
 
-## Compiling Rust to WebAssembly
+### Compiling Rust to WebAssembly
 
 To build the `.wasm` file, run this from the application directory:  
 **(note: downloading and compiling dependencies might take a few minutes)**
@@ -221,7 +225,7 @@ $ ls -lh ../target/wasm32-unknown-unknown/release/dice_game.wasm
 -rwxr-xr-x  2 user  user  1.4M Mar 5 00:00 target/wasm32-unknown-unknown/release/dice_game.wasm
 ```
 
-## Publishing
+## Publishing the backend app
 Let's refer to the [Fluence Book](https://fluence.network/docs/book/quickstart/publish.html) to guide us through the publishing process.
 
 ## Dashboard
