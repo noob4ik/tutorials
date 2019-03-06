@@ -34,38 +34,3 @@ mod settings {
     // if win, player receives bet_amount * PAYOUT_RATE money
     pub const PAYOUT_RATE: u64 = 5;
 }
-
-thread_local! {
-    static GAME_MANAGER: RefCell<GameManager> = RefCell::new(GameManager::new());
-}
-
-fn do_request(req: String) -> AppResult<Value> {
-    let request: Request = serde_json::from_str(req.as_str())?;
-
-    match request {
-        Request::Join => GAME_MANAGER.with(|gm| gm.borrow_mut().join()),
-
-        Request::Roll {
-            player_id,
-            bet_placement,
-            bet_size,
-        } => GAME_MANAGER.with(|gm| gm.borrow_mut().roll(player_id, bet_placement, bet_size)),
-
-        Request::GetBalance { player_id } => {
-            GAME_MANAGER.with(|gm| gm.borrow_mut().get_player_balance(player_id))
-        }
-    }
-}
-
-#[invocation_handler]
-fn main(req: String) -> String {
-    match do_request(req) {
-        Ok(res) => res.to_string(),
-        Err(err) => {
-            let response = Response::Error {
-                message: err.to_string(),
-            };
-            serde_json::to_string(&response).unwrap()
-        }
-    }
-}
