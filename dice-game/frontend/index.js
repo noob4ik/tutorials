@@ -29,9 +29,10 @@ window.onload = function () {
 	const betPlacementInput = document.getElementById('bet-placement');
 	const rollButton = document.getElementById('roll');
 	const historyTable = document.getElementById('history');
-	
+	const prizeDiv = document.getElementById('prize');
+
 	// address to Fluence contract in Ethereum blockchain. Interaction with blockchain created by MetaMask or with local Ethereum node
-	let contractAddress = "0x074a79f29c613f4f7035cec582d0f7e4d3cda2e7";
+	let contractAddress = "0xf008c29bb1fabd1eb1ea73b2410f523a5c213f19";
 
 	// set ethUrl to `undefined` to use MetaMask instead of Ethereum node
 	let ethUrl = "http://data.fluence.one:8545/";
@@ -54,6 +55,7 @@ window.onload = function () {
 				statusDiv.innerText = "You joined to game. Your id is: " + response.player_id;
 				// 100 is hardcoded, because we always register a new player
 				updateBalance(100);
+				calcPrize();
 				startGame(response.player_id);
 			} else {
 				showError("Unable to register: " + str);
@@ -70,6 +72,23 @@ window.onload = function () {
 
 	// call roll() on button click
 	rollButton.addEventListener("click", roll);
+
+	betSizeInput.addEventListener("input", calcPrize);
+
+	function calcPrize() {
+		let bet = betSizeInput.value;
+		if (bet) {
+			bet = parseInt(bet);
+			if (bet > globalInfo.balance) {
+				prizeDiv.innerHTML = "You cannot bet this amount!"
+			} else {
+				let prize = bet * 5;
+				prizeDiv.innerHTML = `Your prize will be: ${prize}!`
+			}
+		} else {
+			prizeDiv.innerHTML = ""
+		}
+	}
 
 	// roll the dice by sending a request to backend, show the outcome and balance
 	function roll() {

@@ -17,11 +17,19 @@
                         </div>
                         <div class="form-group row">
                             <label for="bet-size" class="col-sm-4 col-form-label">Enter your bet:</label>
-                            <input type="number" id="bet-size" class="col-sm-4 form-control" required>
+                            <input type="number" id="bet-size" class="col-sm-2 form-control" required value="1">
+                            <div id="prize" class="col-sm-6 text-center"></div>
                         </div>
                         <div class="form-group row">
                             <label for="bet-placement" class="col-sm-4 col-form-label">Guess a dice number:</label>
-                            <input type="number" id="bet-placement" class="col-sm-4 form-control" required min="1" max="6">
+                            <select id="bet-placement" class="col-sm-2 form-control">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                            </select>
                         </div>
                         <button id="roll" class="btn btn-primary" type="button">Roll</button><br/>
                     </form>

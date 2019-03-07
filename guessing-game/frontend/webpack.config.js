@@ -12,6 +12,14 @@ module.exports = {
         hot: true
     },
     mode: "development",
+    module: {
+        rules: [
+            {
+                test: /\.css$/,
+                use: ['style-loader', 'css-loader']
+            }
+        ]
+    },
     // build all code in `bundle.js` in `bundle` directory
     output: {
         filename: 'bundle.js',
