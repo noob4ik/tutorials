@@ -76,7 +76,7 @@ window.onload = function () {
 
 		resultDiv.hidden = true;
 
-		getResultString(session.invoke(request)).then((r) => {
+		getResultString(session.request(request)).then((r) => {
 
 			player_tile = r.player_tile;
 			initState(r);
@@ -97,7 +97,7 @@ window.onload = function () {
 
 			console.log("request: " + request);
 
-			getResultString(session.invoke(request)).then((r) => {
+			getResultString(session.request(request)).then((r) => {
 				initState(r);
 				gameBoard.hidden = false;
 				console.log("response: " + JSON.stringify(r));
@@ -142,7 +142,7 @@ window.onload = function () {
 
 		console.log("request: " + request);
 
-		getResultString(session.invoke(request)).then((r) => {
+		getResultString(session.request(request)).then((r) => {
 			console.log("response: " + JSON.stringify(r));
 			// trick because server returns unsuitable coords if there is no coords
 			if (r.coords[0] >= 0 && r.coords[0] <= 2) appMove(r);

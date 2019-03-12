@@ -48,7 +48,7 @@ window.onload = function () {
 
 	// send request to join the game
 	function join() {
-		let result = session.invoke(`{ "action": "Join" }`);
+		let result = session.request(`{ "action": "Join" }`);
 		getResultAsString(result).then(function (str) {
 			let response = JSON.parse(str);
 			if (response.player_id || response.player_id === 0) {
@@ -95,7 +95,7 @@ window.onload = function () {
 		if (checkInput()) {
 			resultDiv.innerHTML = "";
 			let request = rollRequest();
-			let result = session.invoke(JSON.stringify(request));
+			let result = session.request(JSON.stringify(request));
 			getResultAsString(result).then(str => {
 				let response = JSON.parse(str);
 				if (response.outcome) {
@@ -166,7 +166,7 @@ window.onload = function () {
 
 	// hackity-hack! we could get balance for any player
 	function getBalance(id) {
-		let result = session.invoke(`{ "player_id": ${id}, "action": "GetBalance"}`);
+		let result = session.request(`{ "player_id": ${id}, "action": "GetBalance"}`);
 		return getResultAsString(result).then(function (str) {
 			let response = JSON.parse(str);
 			if (response.player_balance) {

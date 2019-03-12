@@ -46,7 +46,7 @@ window.onload = function () {
 	// send input as a transaction and display results in grettingLbl
 	function send() {
 		const input = inputLbl.value.trim();
-		let result = session.invoke(input);
+		let result = session.request(input);
 		getResultString(result).then(function (str) {
 			outputLbl.innerHTML = `<tr><td>#${tryNum++}:</td><td>${input}</td><td>${str}</td></tr>${outputLbl.innerHTML}`
 		});

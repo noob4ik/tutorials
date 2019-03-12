@@ -10,7 +10,7 @@
 - [Developing the web app](#developing-the-web-app)
   - [package.json](#packagejson)
   - [index.js](#indexjs)
-    - [JS SDK: invoke(), result()](#js-sdk-invoke-result)
+    - [JS SDK: request(), result()](#js-sdk-invoke-result)
     - [JS SDK: connect()](#js-sdk-connect)
     - [Game: join()](#game-join)
     - [Game: roll()](#game-roll)
@@ -306,10 +306,10 @@ window.logResultAsString = function(result) {
 };
 ```
 
-#### JS SDK: invoke(), result()
-Main method in Fluence SDK is `invoke`, it takes a string, and returns an object similar to promise. Object has a method called `result`. Responses are lazy in Fluence, and `result` retrieves the response of a specific `invoke` from the real-time cluster.
+#### JS SDK: request(), result()
+Main method in Fluence SDK is `request`, it takes a string, and returns an object similar to promise. Object has a method called `result`. Responses are lazy in Fluence, and `result` retrieves the response of a specific `request` from the real-time cluster.
 
-So methods `getResultAsString` and `logResultAsString` are to automate calling `result`, and save some typing. It's not always a good idea to call `result` on every invoke, because result is available only after two Tendermint blocks, so it can take a while. Sometimes a better approach would be to send a batch on `invoke`'s, and then call `result` as you need.
+So methods `getResultAsString` and `logResultAsString` are to automate calling `result`, and save some typing. It's not always a good idea to call `result` on every request, because result is available only after two Tendermint blocks, so it can take a while. Sometimes a better approach would be to send a batch on `request`'s, and then call `result` as you need.
 
 #### JS SDK: connect()
 
@@ -338,7 +338,7 @@ Let's move from SDK API to the actual game interface implementation!
 ```javascript
 // send request to join the game
 function join() {
-    let result = session.invoke(`{ "action": "Join" }`);
+    let result = session.request(`{ "action": "Join" }`);
     getResultAsString(result).then(function (str) {
         let response = JSON.parse(str);
         ...
@@ -359,7 +359,7 @@ rollButton.addEventListener("click", roll);
 function roll() {
     ...
     let request = betRequest();
-    let result = session.invoke(request);
+    let result = session.request(request);
     getResultAsString(result).then(str => {
         let response = JSON.parse(str);
         ...

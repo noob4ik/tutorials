@@ -11,9 +11,9 @@ const createTableQuery = "CREATE TABLE polution_uusimaa(id varchar(128), locatio
 const deleteQuery = "DELETE FROM polution_uusimaa";
 
 fluence.connect("0x4c9c53c3005a52d3468bb8a20fcb4c3ea76098ac", 31).then((s) => {
-    s.invoke(deleteQuery).result().then((r) => console.log(r.asString()));
+    s.request(deleteQuery).result().then((r) => console.log(r.asString()));
 
-    s.invoke(createTableQuery)
+    s.request(createTableQuery)
         .result() // to return promise and wait for result we need to call `result()` function
         .then((r) => console.log(r.asString())); // `asString()` decodes bytes format to string
     fluenceSession = s
@@ -34,14 +34,14 @@ function getData() {
         },
         (message, metadata) => {
             const query = insertQuery(message); // generates query
-            fluenceSession.invoke(query); // and inserts it in into LlamaDB
+            fluenceSession.request(query); // and inserts it in into LlamaDB
         }
     )
 }
 
 function getCount() {
     const query = "SELECT COUNT(*) FROM polution_uusimaa";
-    fluenceSession.invoke(query).result().then((r) => {
+    fluenceSession.request(query).result().then((r) => {
         console.log("Data count: " + r.asString().split("\n")[1])
     })
 }
@@ -56,7 +56,7 @@ const parameters = ["pm25", "pm10", "no2", "o3"];
 function getMax(parameter) {
     if (!parameters.includes(parameter)) throw new Error(`No such parameter ${parameter}. Use only one of: ${parameters}`);
     const query = `SELECT MAX(value) FROM polution_uusimaa WHERE parameter = '${parameter}'`;
-    fluenceSession.invoke(query).result().then((r) => {
+    fluenceSession.request(query).result().then((r) => {
         console.log(`Maximum of ${parameter}: ${r.asString().split("\n")[1]}`);
     })
 }
