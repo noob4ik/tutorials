@@ -16,6 +16,7 @@
 
 use std::error::Error;
 use std::sync::Mutex;
+use std::ptr::NonNull;
 
 use fluence::sdk::*;
 use llamadb::tempdb::{ExecuteStatementResponse, TempDb};
@@ -41,4 +42,13 @@ fn main(input: String) -> String {
 fn forward(input: String) -> GenResult<String> {
     // forward request to next module
     "".to_owned()
+}
+
+#[link(wasm_import_module = "dice_game")]
+extern {
+    fn allocate(size: usize) -> NonNull<u8>;
+    fn deallocate(ptr: NonNull<u8>, size: usize);
+    fn invoke(ptr: NonNull<u8>, size: usize) -> NonNull<u8>;
+    fn loadFrom(ptr: NonNull<u8>) -> NonNull<u8>;
+    fn storeTo(ptr: NonNull<u8>, byte: NonNull<u8>);
 }
