@@ -1,9 +1,9 @@
 [package]
-name = "counter"
+name = "proxy-rs"
 version = "0.1.0"
 authors = ["Fluence Labs"]
 publish = false
-description = "A simple counter for Fluence"
+description = "Proxy for counter"
 edition = "2018"
 
 [profile.release]
@@ -12,7 +12,7 @@ lto = true
 panic = "abort"
 
 [lib]
-name = "counter"
+name = "proxy-rs"
 path = "src/lib.rs"
 crate-type = ["cdylib"]
 panic = "abort"
