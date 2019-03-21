@@ -1,5 +1,13 @@
-import {JSONEncoder} from "../node_modules/assemblyscript-json/assembly/encoder";
-import {ErrorResponse, GetBalanceResponse, JoinResponse, Response, RollResponse} from "./response";
+import {ErrorResponse, GetBalanceResponse, JoinResponse, RollResponse} from "./response";
+import {
+    countPlayers,
+    createPlayer,
+    deletePlayer,
+    getPlayersBalance, initTables,
+    maximumId,
+    minimumId,
+    updateBalance
+} from "./database";
 
 const PLAYERS_MAX_COUNT: i32 = 1024;
 const SEED: u64 = 123456;
@@ -11,28 +19,31 @@ const DICE_LINE_COUNT: u8 = 6;
 
 export class GameManager {
 
-    registeredPlayers: u64 = 0;
-    playerIds: u64[] = new Array();
-    playerBalance: Map<u64, u64> = new Map<u64, u64>();
-
     constructor() {
         NativeMath.seedRandom(SEED);
+        initTables();
     }
 
     join(): string {
         // delete the oldest player, if maximum players reach
-        if (this.playerIds.length >= PLAYERS_MAX_COUNT) {
-            let lastPlayer = this.playerIds.pop();
-            this.playerBalance.delete(lastPlayer);
+
+        let playerNumber = countPlayers();
+
+        if (playerNumber >= PLAYERS_MAX_COUNT) {
+            let lastPlayer = minimumId();
+            deletePlayer(lastPlayer);
         }
 
-        this.playerIds.push(this.registeredPlayers);
+        let newPlayerId: u64;
+        if (playerNumber == 0) {
+            newPlayerId = 0;
+        } else {
+            newPlayerId = maximumId() + 1
+        }
 
-        this.playerBalance.set(this.registeredPlayers, INIT_ACCOUNT_BALANCE);
+        createPlayer(newPlayerId, INIT_ACCOUNT_BALANCE);
 
-        let response = new JoinResponse(this.registeredPlayers);
-
-        this.registeredPlayers = this.registeredPlayers + 1;
+        let response = new JoinResponse(newPlayerId);
 
         let resultStr = response.serialize();
         return resultStr;
@@ -45,12 +56,12 @@ export class GameManager {
             return error.serialize();
         }
 
-        if (!this.playerBalance.has(playerId)) {
+        let balance = getPlayersBalance(playerId);
+
+        if (!balance) {
             let error = new ErrorResponse("There is no player with such id: " + playerId.toString());
             return error.serialize();
         }
-
-        let balance: u64 = this.playerBalance.get(playerId);
 
         if (betSize > balance) {
             let error = new ErrorResponse("Player hasn't enough money: player's current balance is " + balance.toString()  + " while the bet is " + betSize.toString());
@@ -67,7 +78,7 @@ export class GameManager {
             newBalance = balance - betSize;
         }
 
-        this.playerBalance.set(playerId, newBalance);
+        updateBalance(playerId, newBalance);
 
         let response = new RollResponse(outcome, newBalance);
         let resultStr = response.serialize();
@@ -76,11 +87,12 @@ export class GameManager {
     }
 
     getBalance(playerId: u64): string {
-        if (!this.playerBalance.has(playerId)) {
+        let balance = getPlayersBalance(playerId);
+        if (!balance) {
             let error = new ErrorResponse("There is no player with id: " + playerId.toString());
             return error.serialize();
         }
-        let response = new GetBalanceResponse(this.playerBalance.get(playerId));
+        let response = new GetBalanceResponse(balance);
         return response.serialize();
     }
 }
