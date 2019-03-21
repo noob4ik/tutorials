@@ -1,0 +1,25 @@
+[package]
+name = "authorization"
+version = "0.1.0"
+authors = ["Fluence Labs"]
+publish = false
+description = "Authorization WASM module"
+edition = "2018"
+
+[profile.release]
+debug = false
+lto = true
+opt-level = "z"
+panic = "abort"
+
+[lib]
+name = "authorization"
+path = "src/lib.rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+lazy_static = "1.1.0"
+fluence = { version = "0.1.0" }
+libsecp256k1 = "0.2.2"
+sha2 = "0.8.0"
+
