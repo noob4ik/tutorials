@@ -1,6 +1,6 @@
 import "allocator/buddy";
-import {invoke as counterInvoke} from "./counter";
+import {invoke} from "./counter";
 
-export function invoke(): i32 {
-    return counterInvoke(0, 0);
+export function invokeProxy(): i32 {
+    return invoke(0, 0);
 }

@@ -24,7 +24,7 @@ use std::mem;
 #[invocation_handler]
 pub fn main() -> Vec<u8> {
     unsafe {
-        let i: i32 = imported::invoke();
+        let i: i32 = imported::invokeProxy();
         let mut bs = [0u8; mem::size_of::<i32>()];
         bs.as_mut()
             .write_i32::<LittleEndian>(i)

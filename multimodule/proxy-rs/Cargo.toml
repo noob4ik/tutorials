@@ -1,5 +1,5 @@
 [package]
-name = "proxy-rs"
+name = "proxyrs"
 version = "0.1.0"
 authors = ["Fluence Labs"]
 publish = false
@@ -12,7 +12,7 @@ lto = true
 panic = "abort"
 
 [lib]
-name = "proxy-rs"
+name = "proxyrs"
 path = "src/lib.rs"
 crate-type = ["cdylib"]
 panic = "abort"

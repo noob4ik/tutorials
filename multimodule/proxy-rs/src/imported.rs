@@ -1,4 +1,4 @@
 #[link(wasm_import_module = "proxy-as")]
 extern {
-    pub fn invoke() -> i32;
+    pub fn invokeProxy() -> i32;
 }
