@@ -1,0 +1,21 @@
+{
+  "name": "assemblyscript-dice-game",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "asbuild:optimized": "asc assembly/index.ts -b build/optimized.wasm -t build/optimized.wat --use abort='' --sourceMap --validate",
+    "asbuild": "npm run asbuild:optimized",
+    "asbuild:test": "npm run asbuild:test:roundtrip",
+    "asbuild:test:roundtrip": "npx asc tests/assembly/roundtrip.spec.as.ts -b tests/build/roundtrip.wasm -t tests/build/roundtrip.wat --validate --sourceMap --importMemory"
+  },
+  "author": "",
+  "license": "Apache 2.0",
+  "devDependencies": {
+    "@types/node": "^10.12.3",
+    "assemblyscript": "AssemblyScript/assemblyscript",
+    "ts-node": "^7.0.1",
+    "typedoc": "^0.13.0",
+    "typescript": "^3.1.6"
+  }
+}

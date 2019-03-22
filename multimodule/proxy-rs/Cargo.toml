@@ -1,0 +1,22 @@
+[package]
+name = "proxyrs"
+version = "0.1.0"
+authors = ["Fluence Labs"]
+publish = false
+description = "Proxy for counter"
+edition = "2018"
+
+[profile.release]
+opt-level = 3
+lto = true
+panic = "abort"
+
+[lib]
+name = "proxyrs"
+path = "src/lib.rs"
+crate-type = ["cdylib"]
+panic = "abort"
+
+[dependencies]
+fluence = { version = "0.1.0" }
+byteorder = { version = "1" }
