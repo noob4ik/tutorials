@@ -46,13 +46,10 @@ fn init() {
 /// Executes SQL and converts llamadb error to string.
 #[invocation_handler(init_fn = init)]
 fn main(sql_str: String) -> String {
-    info!("request: {}", sql_str);
     match run_query(&sql_str) {
         Ok(response) => {
-            info!("response {}", response);
             response
         },
-
         Err(err_msg) => {
             let err = format!("[Error] {}", err_msg);
             info!("err {}", err);

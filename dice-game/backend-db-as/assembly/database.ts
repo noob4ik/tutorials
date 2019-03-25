@@ -12,8 +12,6 @@ function doRequest(request: string): string {
 
     let strLen: i32 = request.length;
     let addr = allocate(strLen);
-    log("str len: " + strLen.toString());
-    log("addr: " + addr.toString());
 
     for (let i = 0; i < strLen; i++) {
         let b: u8 = request.charCodeAt(i) as u8;
@@ -22,24 +20,16 @@ function doRequest(request: string): string {
 
     let resultAddr = invoke(addr, strLen);
 
-    log("[doRequest] Result addr: " + resultAddr.toString());
-
-
     let lenBytes: u8[] = new Array(4);
     for (let i = 0; i < 4; i++) {
-        let b = load_db(resultAddr + i);
-        log("[doRequest] len byte: " + b.toString());
-        lenBytes[i] = b;
+        lenBytes[i] = load_db(resultAddr + i);
     }
 
     let sizeLen: i32 = 0;
 
     for (let i = 0; i < 4; i++) {
         sizeLen = sizeLen | (lenBytes[i] << (8*(i - 4) as u8))
-        log("[doRequest] str len loop: " + sizeLen.toString());
     }
-
-    log("[doRequest] Size len: " + sizeLen.toString());
 
     let strBytes = new Uint8Array(sizeLen);
 
@@ -47,17 +37,13 @@ function doRequest(request: string): string {
         strBytes[i] = load_db(resultAddr + i + 4);
     }
 
-    log("[doRequest] Get result");
-
 
     let result = String.fromUTF8(strBytes.buffer.data, strBytes.length);
 
     log("[doRequest] Result: ");
     log("[doRequest] " + result);
 
-    log("[doRequest] Deallocate: " + resultAddr.toString());
-
-    // deallocate(resultAddr, sizeLen + 4);
+    deallocate(resultAddr, sizeLen + 4);
 
     return result;
 }
@@ -75,7 +61,7 @@ export function createPlayer(id: u64, balance: u64): void {
 }
 
 export function getPlayersBalance(id: u64): u64 {
-    let request = "SELECT balance FROM dice_game WHERE id = " + id.toString();
+    let request = "SELECT balance FROM dice_players WHERE id = " + id.toString();
     log("Select player: " + id.toString());
     let result = doRequest(request);
     let balance = result.split("\n")[1];
@@ -92,8 +78,8 @@ export function countPlayers(): i32 {
     let request = "SELECT COUNT(*) FROM dice_players";
     let result = doRequest(request);
     log("Count players result: " + result);
-    let count = result.split("\n")[1];
-    if (count) {
+    let count = result.split("\n")[1].trim();
+    if (!count || count.length == 0) {
         return 0;
     } else {
         return I32.parseInt(count);

@@ -54,8 +54,6 @@ fn main(input: String) -> String {
 fn forward(input: &str) -> GenResult<String> {
     unsafe {
 
-        info!("[proxy] forwarding");
-
         let bytes = input.as_bytes();
         let len = bytes.len();
 
@@ -76,19 +74,13 @@ fn forward(input: &str) -> GenResult<String> {
 
         let result_len: usize = std::mem::transmute(len_bytes);
 
-        info!("[proxy] len: {}", result_len);
-
-        let mut result_bytes: [u8; RESULT_SIZE_LEN] = [0; RESULT_SIZE_LEN];
+        let mut result_bytes = vec![0; result_len];
 
         for i in RESULT_SIZE_LEN..(result_len + RESULT_SIZE_LEN) {
             result_bytes[i - RESULT_SIZE_LEN] = loadBackend(result_ptr + i);
         }
 
-        info!("[proxy] bytes loaded");
-
         let result_str = std::str::from_utf8(result_bytes.as_ref())?;
-
-        info!("[proxy] parsed result: {}", result_str);
 
         deallocateBackend(result_ptr, result_len + RESULT_SIZE_LEN);
 

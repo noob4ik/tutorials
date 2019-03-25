@@ -1,7 +1,5 @@
-// import "allocator/tlsf";
-// import "collector/itcm";
-import "allocator/buddy";
-// import "allocator/arena";
+// only this allocator can reset it's state
+import "allocator/arena";
 
 import {handler} from "./game_handler";
 
@@ -10,7 +8,7 @@ export function allocateBackend(size: i32) :i32 {
 }
 
 export function deallocateBackend(ptr: i32, size: i32): void {
-  memory.free(ptr);
+  memory.reset();
 }
 
 export function storeBackend(ptr: i32, byte: u8): void {
