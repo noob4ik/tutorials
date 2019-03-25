@@ -5,15 +5,23 @@ import "allocator/buddy";
 
 import {handler} from "./game_handler";
 
-export function allocate(size: i32) :i32 {
+export function allocateBackend(size: i32) :i32 {
   return memory.allocate(size);
 }
 
-export function deallocate(ptr: i32, size: i32): void {
+export function deallocateBackend(ptr: i32, size: i32): void {
   memory.free(ptr);
 }
 
-export function invoke(ptr: i32, size: i32): i32 {
+export function storeBackend(ptr: i32, byte: u8): void {
+    store<u8>(ptr, byte);
+}
+
+export function loadBackend(ptr: i32): u8 {
+    return load<u8>(ptr);
+}
+
+export function invokeBackend(ptr: i32, size: i32): i32 {
 
     let bb: Uint8Array = new Uint8Array(size);
 
@@ -33,7 +41,7 @@ export function invoke(ptr: i32, size: i32): i32 {
     let strAddr = addr + 4;
     for (let i = 0; i < strLen; i++) {
         let b: u8 = result.charCodeAt(i) as u8;
-      store<u8>(strAddr + i, b);
+        store<u8>(strAddr + i, b);
     }
 
     memory.free(changetype<usize>(result));

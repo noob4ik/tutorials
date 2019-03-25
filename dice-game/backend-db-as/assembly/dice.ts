@@ -8,6 +8,7 @@ import {
     minimumId,
     updateBalance
 } from "./database";
+import {log} from "./logger";
 
 const PLAYERS_MAX_COUNT: i32 = 1024;
 const SEED: u64 = 123456;
@@ -46,6 +47,7 @@ export class GameManager {
         let response = new JoinResponse(newPlayerId);
 
         let resultStr = response.serialize();
+        log("[backend] result: " + resultStr);
         return resultStr;
     }
 

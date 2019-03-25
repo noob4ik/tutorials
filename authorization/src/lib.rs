@@ -15,23 +15,35 @@
  */
 
 use std::error::Error;
-use std::sync::Mutex;
-use std::ptr::NonNull;
 
 use fluence::sdk::*;
-use llamadb::tempdb::{ExecuteStatementResponse, TempDb};
+use log::info;
 
 use crate::signature::*;
+
+#[macro_use]
+extern crate lazy_static;
 
 mod signature;
 
 /// Result for all possible Error types.
 type GenResult<T> = ::std::result::Result<T, Box<Error>>;
 
+const RESULT_SIZE_LEN: usize = 4;
 
-#[invocation_handler]
+fn init() {
+    logger::WasmLogger::init_with_level(log::Level::Info).unwrap();
+}
+
+#[invocation_handler(init_fn = init)]
 fn main(input: String) -> String {
-    let result = check_input(&input).and_then(forward);
+    let result =
+        if false {
+            check_input(&input).and_then(forward)
+        } else {
+            forward(input.as_str())
+        };
+
 
     match result {
         Ok(response) => response,
@@ -39,16 +51,56 @@ fn main(input: String) -> String {
     }
 }
 
-fn forward(input: String) -> GenResult<String> {
-    // forward request to next module
-    "".to_owned()
+fn forward(input: &str) -> GenResult<String> {
+    unsafe {
+
+        info!("[proxy] forwarding");
+
+        let bytes = input.as_bytes();
+        let len = bytes.len();
+
+        let ptr = allocateBackend(len);
+
+        for i in 0..len {
+
+            storeBackend(ptr + i, bytes[i]);
+        }
+
+        let result_ptr = invokeBackend(ptr, len);
+
+        let mut len_bytes: [u8; RESULT_SIZE_LEN] = [0; RESULT_SIZE_LEN];
+
+        for i in 0..RESULT_SIZE_LEN {
+            len_bytes[i] = loadBackend(result_ptr + i);
+        }
+
+        let result_len: usize = std::mem::transmute(len_bytes);
+
+        info!("[proxy] len: {}", result_len);
+
+        let mut result_bytes: [u8; RESULT_SIZE_LEN] = [0; RESULT_SIZE_LEN];
+
+        for i in RESULT_SIZE_LEN..(result_len + RESULT_SIZE_LEN) {
+            result_bytes[i - RESULT_SIZE_LEN] = loadBackend(result_ptr + i);
+        }
+
+        info!("[proxy] bytes loaded");
+
+        let result_str = std::str::from_utf8(result_bytes.as_ref())?;
+
+        info!("[proxy] parsed result: {}", result_str);
+
+        deallocateBackend(result_ptr, result_len + RESULT_SIZE_LEN);
+
+        return Ok(result_str.to_owned())
+    }
 }
 
 #[link(wasm_import_module = "dice_game")]
 extern {
-    fn allocate(size: usize) -> NonNull<u8>;
-    fn deallocate(ptr: NonNull<u8>, size: usize);
-    fn invoke(ptr: NonNull<u8>, size: usize) -> NonNull<u8>;
-    fn loadFrom(ptr: NonNull<u8>) -> NonNull<u8>;
-    fn storeTo(ptr: NonNull<u8>, byte: NonNull<u8>);
+    fn allocateBackend(size: usize) -> usize;
+    fn deallocateBackend(ptr: usize, size: usize);
+    fn invokeBackend(ptr: usize, size: usize) -> usize;
+    fn loadBackend(ptr: usize) -> u8;
+    fn storeBackend(ptr: usize, byte: u8);
 }
