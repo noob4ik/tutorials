@@ -10,7 +10,7 @@ let gameManager = new GameManager();
 export function handler(requestBytes: Uint8Array): string {
 
     //TODO add admin commands and check signature for this commands
-    if (false) {
+    if (true) {
         let requestStr = String.fromUTF8(requestBytes.buffer.data, requestBytes.length);
 
         log("requestStr: " + requestStr);

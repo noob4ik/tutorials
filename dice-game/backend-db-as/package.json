@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "assemblyscript-json": "github:fluencelabs/assemblyscript-json",
-    "crossmodule": "github:fluencelabs/signature-connector",
-    "signature-connector": "github:fluencelabs/signature-connector"
+    "signature-connector": "github:fluencelabs/signature-connector",
+    "db-connector": "github:fluencelabs/db-connector"
   }
 }

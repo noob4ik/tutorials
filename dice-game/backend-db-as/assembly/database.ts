@@ -1,55 +1,11 @@
 import {log} from "./logger";
-export declare function allocate(size: i32): i32;
-export declare function deallocate(ptr: i32, size: i32): void;
-export declare function invoke(ptr: i32, size: i32): i32;
-export declare function store_db(ptr: i32, byte: u8): void;
-export declare function load_db(ptr: i32): u8;
-
-function invokeStr(request: string): i32 {
-    let strLen: i32 = request.length;
-    let addr = allocate(strLen);
-
-    for (let i = 0; i < strLen; i++) {
-        let b: u8 = request.charCodeAt(i) as u8;
-        store_db(addr + i, b);
-    }
-
-    return invoke(addr, strLen);
-}
-
-function getResultString(addr: i32): string {
-    let lenBytes: u8[] = new Array(4);
-    for (let i = 0; i < 4; i++) {
-        lenBytes[i] = load_db(addr + i);
-    }
-
-    let sizeLen: i32 = 0;
-
-    for (let i = 0; i < 4; i++) {
-        sizeLen = sizeLen | (lenBytes[i] << (8*(i - 4) as u8))
-    }
-
-    let strBytes = new Uint8Array(sizeLen);
-
-    for (let i = 0; i < sizeLen; i++) {
-        strBytes[i] = load_db(addr + i + 4);
-    }
-
-
-    let result = String.fromUTF8(strBytes.buffer.data, strBytes.length);
-
-    deallocate(addr, sizeLen + 4);
-
-    return result;
-}
+import {query} from "../node_modules/db-connector/assembly/index"
 
 function doRequest(request: string): string {
 
     log("[doRequest] Request: " + request);
 
-    let resultAddr = invokeStr(request);
-
-    let result = getResultString(resultAddr);
+    let result = query(request);
 
     log("[doRequest] Result: ");
     log("[doRequest] " + result);

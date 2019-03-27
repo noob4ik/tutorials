@@ -93,11 +93,11 @@ fn statement_to_string(statement: ExecuteStatementResponse) -> String {
 }
 
 #[no_mangle]
-pub unsafe fn store_db(mut ptr: NonNull<u8>, byte: u8) {
+pub unsafe fn store(mut ptr: NonNull<u8>, byte: u8) {
     *ptr.as_mut() = byte;
 }
 
 #[no_mangle]
-pub unsafe fn load_db(ptr: NonNull<u8>) -> u8 {
+pub unsafe fn load(ptr: NonNull<u8>) -> u8 {
     return *ptr.as_ref();
 }
