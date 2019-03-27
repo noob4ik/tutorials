@@ -3,23 +3,15 @@ import "allocator/arena";
 
 import {handler} from "./game_handler";
 
-export function allocateBackend(size: i32) :i32 {
+export function allocate(size: usize) :i32 {
   return memory.allocate(size);
 }
 
-export function deallocateBackend(ptr: i32, size: i32): void {
+export function deallocate(ptr: i32, size: usize): void {
   memory.reset();
 }
 
-export function storeBackend(ptr: i32, byte: u8): void {
-    store<u8>(ptr, byte);
-}
-
-export function loadBackend(ptr: i32): u8 {
-    return load<u8>(ptr);
-}
-
-export function invokeBackend(ptr: i32, size: i32): i32 {
+export function invoke(ptr: i32, size: i32): i32 {
 
     let bb: Uint8Array = new Uint8Array(size);
 
