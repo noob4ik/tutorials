@@ -1,9 +1,9 @@
 [package]
-name = "authorization"
+name = "signature"
 version = "0.1.0"
 authors = ["Fluence Labs"]
 publish = false
-description = "Authorization WASM module"
+description = "Signature check WASM module"
 edition = "2018"
 
 [profile.release]
@@ -13,7 +13,7 @@ opt-level = "z"
 panic = "abort"
 
 [lib]
-name = "authorization"
+name = "signature"
 path = "src/lib.rs"
 crate-type = ["cdylib"]
 

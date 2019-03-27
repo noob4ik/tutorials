@@ -47,7 +47,6 @@ export class GameManager {
         let response = new JoinResponse(newPlayerId);
 
         let resultStr = response.serialize();
-        log("[backend] result: " + resultStr);
         return resultStr;
     }
 

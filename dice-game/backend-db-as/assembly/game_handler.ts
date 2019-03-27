@@ -10,30 +10,31 @@ export function handler(requestBytes: Uint8Array): string {
 
     let request: Request = decode(requestBytes);
 
+    let response: string;
+
     if (request.action == Action.Join) {
         log("Handling Join request\n");
-        return gameManager.join();
+        response = gameManager.join();
     } else if (request.action == Action.Roll) {
         log("Handling Roll request\n");
         let r = request as RollRequest;
-        return gameManager.roll(r.playerId, r.betPlacement, r.betSize);
+        response = gameManager.roll(r.playerId, r.betPlacement, r.betSize);
     } else if (request.action == Action.GetBalance) {
         log("Handling GetBalance request\n");
         let r = request as GetBalanceRequest;
-        return gameManager.getBalance(r.playerId);
+        response = gameManager.getBalance(r.playerId);
     } else if (request.action == Action.Unknown) {
         log("Unknown request\n");
         let r = request as UnknownRequest;
         let error = new ErrorResponse(r.message);
-        let returnStr = error.serialize();
+        let response = error.serialize();
         memory.free(changetype<usize>(error));
-        return returnStr;
+    } else {
+        let error = new ErrorResponse("Unreachable.");
+        response = error.serialize();
     }
 
-    memory.free(changetype<usize>(request));
+    log("Response: " + response);
 
-    let response = new ErrorResponse("Unreachable.");
-    let returnStr = response.serialize();
-    memory.free(changetype<usize>(response));
-    return returnStr;
+    return response;
 }
