@@ -22,7 +22,7 @@ window.onload = function () {
 	let ethUrl = "http://data.fluence.one:8545/";
 
 	// application to interact with that stored in Fluence contract
-	let appId = "2";
+	let appId = "106";
 
 	// create a session between client and backend application
 	fluence.connect(contractAddress, appId, ethUrl).then((s) => {
