@@ -86,7 +86,7 @@ Please note that this is a shared instance of the SQL DB, and data may be altere
 
 Check out http://dash.fluence.network to deploy your own SQL DB instance
 Check out http://sql.fluence.network to play with your data via web interface
-Check out https://github.com/fluence/tutorials for more Fluence examples
+Check out https://github.com/fluencelabs/tutorials for more Fluence examples
 
 You can find docs at https://fluence.dev
 
