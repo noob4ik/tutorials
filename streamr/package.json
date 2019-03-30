@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/fluencelabs/fluence#readme",
   "dependencies": {
-    "fluence": "0.1.17",
+    "fluence": "0.1.25",
     "streamr-client": "0.12.2"
   },
   "devDependencies": {

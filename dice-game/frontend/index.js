@@ -18,6 +18,20 @@ window.logResultAsString = function(result) {
 	return getResultAsString(result).then((r) => console.log(r))
 };
 
+console.log(`
+
+Thank you for trying Fluence out! Please, break something.
+
+You can find docs at https://fluence.dev
+
+Check out http://dash.fluence.network to deploy your own SQL DB instance
+Check out http://sql.fluence.network to play with your data via web interface
+Check out https://github.com/fluence/tutorials for more Fluence examples
+
+If you have any questions, feel free to join our Discord https://fluence.chat :)
+
+`)
+
 window.onload = function () {
 	// locate html elements
 	const statusDiv = document.getElementById('status');
