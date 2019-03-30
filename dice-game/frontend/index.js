@@ -38,7 +38,7 @@ window.onload = function () {
 	let ethUrl = "http://data.fluence.one:8545/";
 
 	// application to interact with that stored in Fluence contract
-	let appId = "1";
+	let appId = "109";
 
 	// create a session between client and backend application, and then join the game
 	fluence.connect(contractAddress, appId, ethUrl).then((s) => {
