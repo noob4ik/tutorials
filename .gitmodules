@@ -1,3 +1,5 @@
 [submodule "llamadb/example-sqldb"]
 	path = llamadb/frontend
 	url = https://github.com/fluencelabs/example-sqldb
+	branch = master
+
