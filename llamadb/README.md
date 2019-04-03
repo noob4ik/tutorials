@@ -12,7 +12,7 @@ Llamadb has an `appId = ??? TODO`.
 ## But you can publish too
 If you want your own instance of Llamadb, you can publish it. It would still be accessible by everyone as there's not authtorization by default.
 
-You can either use [prebuilt Wasm binary](llama_db.wasm), or [build it yourself](../backend). Please refer to [Fluence CLI README](TODO) for instructions on how to publish an app to Fluence.
+You can either use [prebuilt Wasm binary](llama_db.wasm), or [build it yourself](backend). Please refer to [Fluence CLI README](TODO) for instructions on how to publish an app to Fluence.
 
 ## Using it
 **You will need Node.js and git installed.**
