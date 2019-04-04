@@ -316,7 +316,7 @@ So methods `getResultAsString` and `logResultAsString` are to automate calling `
 Next, connect to the Fluence real-time cluster hosting the app:
 ```javascript
 // address to Fluence contract in Ethereum blockchain. Interaction with blockchain created by MetaMask or with local Ethereum node
-let contractAddress = "0xf008c29bb1fabd1eb1ea73b2410f523a5c213f19";
+let contractAddress = "0xeFF91455de6D4CF57C141bD8bF819E5f873c1A01";
 
 // set ethUrl to `undefined` to use MetaMask instead of Ethereum node
 let ethUrl = "http://data.fluence.one:8545/";
