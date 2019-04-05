@@ -18,7 +18,7 @@ export class JoinResponse extends Response {
         let encoder = new JSONEncoder();
         encoder.pushObject(null);
         encoder.setString("action", "Join");
-        encoder.setInteger("playerId", this.playerId);
+        encoder.setInteger("player_id", this.playerId);
         encoder.popObject();
 
         return encoder.toString();
@@ -56,7 +56,7 @@ export class GetBalanceResponse extends Response {
         let encoder = new JSONEncoder();
         encoder.pushObject(null);
         encoder.setString("action", "GetBalance");
-        encoder.setInteger("playerBalance", this.playerBalance as i32);
+        encoder.setInteger("player_balance", this.playerBalance as i32);
         encoder.popObject();
 
         return encoder.toString();
