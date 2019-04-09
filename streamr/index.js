@@ -14,7 +14,7 @@ const deleteQuery = "DELETE FROM polution_uusimaa";
 let contractAddress = "0xeFF91455de6D4CF57C141bD8bF819E5f873c1A01";
 
 // set ethUrl to `undefined` to use MetaMask instead of Ethereum node
-let ethUrl = "http://data.fluence.one:8545/";
+let ethUrl = "http://rinkeby.fluence.one:8545/";
 
 // Authorization private key
 let privateKey = "569ae4fed4b0485848d3cf9bbe3723f5783aadd0d5f6fd83e18b45ac22496859"; 
