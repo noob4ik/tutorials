@@ -6,13 +6,20 @@ import {checkSignature} from "../node_modules/signature-connector/assembly/index
 
 let gameManager = new GameManager();
 
+export function string2Bytes(str: string): Uint8Array {
+    let utf8ptr = str.toUTF8();
+    let buffer = new Uint8Array(str.lengthUTF8);
+    for (let i = 0; i <  buffer.length; i++) {
+        buffer[i] = load<u8>(utf8ptr + i);
+    }
+    return buffer.subarray(0, buffer.length - 1);
+}
+
 // returns string, because serialization to a byte array is not compatible with our invoke handlers
-export function handler(requestBytes: Uint8Array): string {
+export function handler(requestStr: string): string {
 
     //TODO add admin commands and check signature for this commands
     if (true) {
-        let requestStr = String.fromUTF8(requestBytes.buffer.data, requestBytes.length);
-
         log("requestStr: " + requestStr);
 
         let checkResult = checkSignature(requestStr);
@@ -22,9 +29,7 @@ export function handler(requestBytes: Uint8Array): string {
         }
     }
 
-
-
-    let request: Request = decode(requestBytes);
+    let request: Request = decode(string2Bytes(requestStr));
 
     let response: string;
 
@@ -49,8 +54,6 @@ export function handler(requestBytes: Uint8Array): string {
         let error = new ErrorResponse("Unreachable.");
         response = error.serialize();
     }
-
-    log("Response: " + response);
 
     return response;
 }
