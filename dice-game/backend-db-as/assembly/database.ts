@@ -1,4 +1,4 @@
-import {log} from "./logger";
+import {log} from "../node_modules/assemblyscript-sdk/assembly/logger";
 import {query} from "../node_modules/db-connector/assembly/index"
 
 function doRequest(request: string): string {

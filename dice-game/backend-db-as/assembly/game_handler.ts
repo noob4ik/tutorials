@@ -1,7 +1,7 @@
 import {Action, decode, GetBalanceRequest, Request, RollRequest, UnknownRequest} from "./request";
 import {ErrorResponse} from "./response";
 import {GameManager} from "./dice";
-import {log} from "./logger";
+import {log} from "../node_modules/assemblyscript-sdk/assembly/logger";
 import {checkSignature} from "../node_modules/signature-connector/assembly/index"
 
 let gameManager = new GameManager();

@@ -8,7 +8,7 @@ import {
     minimumId,
     updateBalance
 } from "./database";
-import {log} from "./logger";
+import {log} from "../node_modules/assemblyscript-sdk/assembly/logger";
 
 const PLAYERS_MAX_COUNT: i32 = 1024;
 const SEED: u64 = 123456;

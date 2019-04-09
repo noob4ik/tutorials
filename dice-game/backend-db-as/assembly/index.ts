@@ -1,9 +1,8 @@
-// only this allocator can reset it's state
 import "allocator/arena";
 
 import {handler} from "./game_handler";
 import {loggedStringHandler} from "../node_modules/assemblyscript-sdk/assembly/index";
-import {log} from "./logger";
+import {log} from "../node_modules/assemblyscript-sdk/assembly/logger";
 
 export function allocate(size: usize) :i32 {
   return memory.allocate(size);
