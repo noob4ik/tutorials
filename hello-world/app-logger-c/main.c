@@ -23,4 +23,3 @@ char *invoke(const char *str, int length) {
 
     return response;
 }
-
