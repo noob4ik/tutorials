@@ -1,6 +1,6 @@
-#ifndef HELLO_WORLD_LOGGER_H
-#define HELLO_WORLD_LOGGER_H
+#ifndef FLUENCE_C_SDK_LOGGER_H
+#define FLUENCE_C_SDK_LOGGER_H
 
 void wasm_log(const char *str, int len);
 
-#endif //HELLO_WORLD_LOGGER_H
+#endif //FLUENCE_C_SDK_LOGGER_H
