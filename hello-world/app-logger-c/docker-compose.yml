@@ -3,6 +3,5 @@ services:
   hello_world:
     build:
       context: .
-#    container_name: fluence-c-hello-world
     volumes:
      - .:/code
