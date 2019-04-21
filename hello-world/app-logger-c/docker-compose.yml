@@ -1,0 +1,8 @@
+version: '3'
+services:
+  hello_world:
+    build: .
+    image: ubuntu:19.04
+    container_name: fluence-c-hello-world
+    volumes:
+     - .:/code
